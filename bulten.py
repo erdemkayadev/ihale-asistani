@@ -1,3 +1,4 @@
+import difflib                                                      # "Kırehir" gibi bozuk il adlarını en yakın ile eşlemek için
 import re                                                           # bültendeki kalıpları yakalamak için
 import sys                                                          # komut satırından dosya adı almak için
 from pathlib import Path                                            # klasördeki PDF'leri listelemek için
@@ -10,6 +11,16 @@ AYLAR = {"OCAK": 1, "ŞUBAT": 2, "MART": 3, "NİSAN": 4, "MAYIS": 5, "HAZİRAN":
 ILAN = re.compile(r"^[ \t]*(\d+)\.\s+(\d{4}/\d+(?:-\d+)?)[ \t]{3,}(?![^\n]*\.{5})", re.M)   # "-3": kısım numarası
 # Bölüm başlıkları: "2. İHALE İLANLARI", "4. İHALE İPTAL İLANLARI", "1. İSTİSNA SONUÇLARININ İLANLARI" ...
 BOLUM = re.compile(r"^[ \t]*\d+\.[ \t]+((?:İHALE|ÇERÇEVE|İSTİSNA|KAPSAM DIŞI)[A-ZÇĞİÖŞÜ ]+?)[ \t]*$", re.M)
+# Bülten türü sayfa başlığından okunur. "DANIŞMANLIK HİZMET ALIMI", "HİZMET ALIMI"ndan önce denenmeli.
+BASLIK = re.compile(r"(MAL ALIMI|YAPIM İŞLERİ|DANIŞMANLIK HİZMET ALIMI|HİZMET ALIMI) İHALELERİ BÜLTENİ[ \t]*(– Sonuç İlanları)?")
+TURLER = {"MAL ALIMI": "Mal", "YAPIM İŞLERİ": "Yapım", "DANIŞMANLIK HİZMET ALIMI": "Danışmanlık", "HİZMET ALIMI": "Hizmet"}
+DOSYA_TURU = {"MAL": "Mal", "YAPIM": "Yapım", "DANISMANLIK": "Danışmanlık", "HIZMET": "Hizmet"}   # dosya adındaki tür
+ILLER = """Adana Adıyaman Afyonkarahisar Ağrı Aksaray Amasya Ankara Antalya Ardahan Artvin Aydın Balıkesir Bartın
+Batman Bayburt Bilecik Bingöl Bitlis Bolu Burdur Bursa Çanakkale Çankırı Çorum Denizli Diyarbakır Düzce Edirne Elazığ
+Erzincan Erzurum Eskişehir Gaziantep Giresun Gümüşhane Hakkari Hatay Iğdır Isparta İstanbul İzmir Kahramanmaraş Karabük
+Karaman Kars Kastamonu Kayseri Kilis Kırıkkale Kırklareli Kırşehir Kocaeli Konya Kütahya Malatya Manisa Mardin Mersin
+Muğla Muş Nevşehir Niğde Ordu Osmaniye Rize Sakarya Samsun Şanlıurfa Siirt Sinop Şırnak Sivas Tekirdağ Tokat Trabzon
+Tunceli Uşak Van Yalova Yozgat Zonguldak""".split()                     # 81 il
 # Her sayfanın üstündeki 3-4 satırlık başlık: "KAMU İHALE BÜLTENİ ... www.kik.gov.tr  17"
 UST_BILGI = re.compile(r"KAMU İHALE BÜLTENİ[^\n]*\n[^\n]*BÜLTENİ[^\n]*\n[^\n]*\n[^\n]*www\.kik\.gov\.tr[ \t]*\d+[ \t]*\n")
 
@@ -42,12 +53,11 @@ def bulteni_oku(yol):
     """Bülten PDF'ini okur. Döner: (bilgi sözlüğü, kayıt listesi)."""
     metin = "\n".join(s.extract_text() or "" for s in PdfReader(yol).pages)
     g, ay, yil = re.search(r"(\d{1,2}) ([A-ZÇĞİÖŞÜ]+) (\d{4}) – Sayı", metin).groups()
-    ust = metin[:3000]
+    baslik = BASLIK.search(metin)                                   # sayfa üstündeki "... İHALELERİ BÜLTENİ" satırı
     bilgi = {
         "bulten_tarihi": f"{yil}-{AYLAR[ay]:02d}-{int(g):02d}",       # "27 KASIM 2026" -> "2026-11-27"
-        "tur": ("Yapım" if "YAPIM İŞLERİ" in ust else "Danışmanlık" if "DANIŞMANLIK" in ust
-                else "Hizmet" if "HİZMET ALIMI" in ust else "Mal"),
-        "sonuc": "Sonuç İlanları" in ust,                           # sonuç bülteni mi, ilan bülteni mi
+        "tur": TURLER[baslik.group(1)],                             # içindekilerde geçen kelimelere değil, başlığa bak
+        "sonuc": bool(baslik.group(2)),                             # "– Sonuç İlanları" varsa sonuç bülteni
     }
     metin = UST_BILGI.sub("\n", metin)                              # sayfa üst bilgilerini sil
     bas = [m.start() for m in re.finditer(r"A- 4734 SAYILI KANUN KAPSAMINDAKİ İLANLAR", metin)]
@@ -86,25 +96,36 @@ def _baslik_idaresi(blok):
     return None
 
 
+def _il(adres):
+    """Adresteki "/İl" kalıplarından 81 ile uyan sonuncuyu döndürür.
+    "Çankaya/Ankara Maltepe V.D. ..." gibi il adından sonra yazı gelen adresleri ve "Kırehir" gibi bozuk harfleri de çözer."""
+    adaylar = re.findall(r"/\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)", adres or "")
+    for aday in reversed(adaylar):                                  # sondan başa: il genelde en sonda yazar
+        yakin = difflib.get_close_matches(aday, ILLER, n=1, cutoff=0.85)   # birebir ya da 1 harf farklı
+        if yakin:
+            return yakin[0]
+    return None
+
+
 def _ilan_alanlari(blok):
     """Yeni ihale ilanından alanları çıkarır. 2022'den bugüne üç farklı biçim desteklenir."""
-    adres = _ilk(blok, r"1\.2\.\s*Adresi\s*:\s*(.*?)\n\s*1\.3\.",                       # 2025 sonu ve sonrası
+    adres = _ilk(blok, r"1\.2\.?\s*Adresi\s*:\s*(.*?)\n\s*1\.3\.?",                     # 2025 sonu ve sonrası ("1.2" noktasız da olur)
                  r"İdarenin\s*\n.*?[ab]\)\s*Adresi\s*:\s*(.*?)\n\s*[b-d]\)")            # daha eski bültenler
-    konu = _ilk(blok, r"3\.1\.?\s*Adı\s*:\s*(.*?)\n\s*3\.2\.",
+    konu = _ilk(blok, r"3\.1\.?\s*Adı\s*:\s*(.*?)\n\s*3\.2\.?",
                 r"İhale konusu[^\n]*\n\s*a\)\s*Adı\s*:\s*(.*?)\n\s*b\)")
     if not konu:                                                    # en eski biçim: "Akaryakıt mal alımı 4734 sayılı ..."
         cumle = _alan(re.split(r"\n[ \t]*\n", blok, maxsplit=1)[-1], r"^\s*(.*?)\s+4734\s+sayılı")
         konu = re.sub(r"\s+(?:mal\s+alımı|hizmet\s+alımı|yapım\s+işi|alımı)$", "", cumle or "") or None
-    tarih = re.search(r"[Tt]arih(?:i)?\s+ve\s+[Ss]aati\s*:\s*(\d\d)\.(\d\d)\.(\d{4})\s*-\s*(\d\d)[:.](\d\d)", blok)
+    tarih = re.search(r"[Tt]arih(?:i)?\s+ve\s+[Ss]aati\s*:\s*(\d\d)\.(\d\d)\.(\d{4})\s*-?\s*(\d\d)[:.](\d\d)", blok)   # danışmanlıkta tire yok
     return {
-        "idare": _ilk(blok, r"1\.1\.\s*Adı\s*:\s*(.*?)\n\s*1\.2\.",
+        "idare": _ilk(blok, r"1\.1\.?\s*Adı\s*:\s*(.*?)\n\s*1\.2\.?",
                       r"İdarenin\s*\n\s*a\)\s*Adı\s*:\s*(.*?)\n\s*b\)") or _baslik_idaresi(blok),
-        "il": _alan(adres or "", r"/\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*$"),  # adresin sonundaki "/İstanbul"
+        "il": _il(adres),                                           # adresteki "/İstanbul"
         "konu": konu,
         "ihale_tarihi": f"{tarih[3]}-{tarih[2]}-{tarih[1]} {tarih[4]}:{tarih[5]}" if tarih else None,   # "2026-12-22 10:00"
         "usul": _alan(blok, r"(açık\s+ihale|belli\s+istekliler\s+arasında\s+ihale|pazarlık)\s+usulü\s+ile\s+ihale"),
         "gecici_teminat": _tam(_alan(blok, r"teklif\s+ettikleri\s+bedelin\s*%\s*(\d+)")),
-        "gecerlilik_gun": _tam(_alan(blok, r"geçerlilik\s+süresi,\s+ihale\s+tarihinden\s+itibaren\s*(\d+)")),
+        "gecerlilik_gun": _tam(_alan(blok, r"geçerlilik\s+süresi,?\s+.{0,60}?tarihinden\s+itibaren\s*(\d+)")),   # "ihale tarihinden" / "ilk teklif verme tarihinden"
     }
 
 
@@ -130,7 +151,7 @@ def _sonuc_alanlari(blok):
     return {
         "idare": _sonuc_idaresi(blok),
         "konu": _alan(blok, r"2-\s*İhale konusu[^\n]*\n\s*a\)\s*Adı\s*:\s*(.*?)\n\s*[b3]"),
-        "ihale_tarihi": _iso(_alan(blok, r"1-\s*İhalenin\s*\n\s*a\)\s*Tarihi\s*:\s*(\d\d\.\d\d\.\d{4})")),
+        "ihale_tarihi": _iso(_alan(blok, r"1-\s*İhalenin\s*\n\s*a\)\s*(?:Ön yeterlik )?[Tt]arihi\s*:\s*(\d\d\.\d\d\.\d{4})")),   # danışmanlıkta "Ön yeterlik tarihi"
         "usul": _alan(blok, r"Usulü\s*:\s*([^\n]+)"),
         "yaklasik_maliyet": _sayi(_alan(blok, r"Yaklaşık Maliyeti[ \t]*:[ \t]*([\d.,]+)[ \t]*[A-Z]{3}")),   # boşsa alt satıra kaymasın
         # Kısımlı ihalede yaklaşık maliyet tüm ihalenin, sözleşme bedeli tek kısmındır: oran hesaplanmamalı
@@ -157,6 +178,10 @@ if __name__ == "__main__":
             bilgi, kayitlar = bulteni_oku(pdf)
         except Exception as hata:                                   # bozuk ya da farklı biçimli PDF: atla, devam et
             print(f"[{sira}/{len(yeni)}] {pdf.name}: OKUNAMADI ({hata})")
+            continue
+        ad_turu = re.search(r"BULTEN_\d{8}_([A-Z]+)", pdf.name)      # çift kontrol: dosya adı ile içerik aynı türü mü söylüyor
+        if ad_turu and DOSYA_TURU.get(ad_turu.group(1)) != bilgi["tur"]:
+            print(f"[{sira}/{len(yeni)}] {pdf.name}: UYARI dosya adı {ad_turu.group(1)}, içerik {bilgi['tur']} diyor. Yazılmadı.")
             continue
         veri.kayitlari_yaz("sonuclar" if bilgi["sonuc"] else "ilanlar", kayitlar)
         veri.islendi_isaretle(pdf.name, bilgi["bulten_tarihi"], bilgi["tur"], bilgi["sonuc"], len(kayitlar))
