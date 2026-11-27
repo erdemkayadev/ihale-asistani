@@ -13,7 +13,7 @@ TALIMAT = """Sen bir kamu ihale uzmanısın. Sana verilen ihale ilanından şu a
 SADECE geçerli bir JSON döndür, başka hiçbir şey yazma:
 {
   "ikn": "İhale Kayıt Numarası, örnek: 2026/123456",
-  "idare": "İhaleyi yapan idarenin adı",
+    "idare": "İlandaki '1.1. Adı' satırında yazan ad, hiçbir şey eklemeden aynen",
   "konu": "İhale konusu işin adı",
   "ihale_tarihi": "GG.AA.YYYY SS:DD biçiminde",
   "usul": "İhale usulü, örnek: açık ihale"
