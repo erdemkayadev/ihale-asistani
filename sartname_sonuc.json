@@ -1,0 +1,514 @@
+[
+  {
+    "belge": "s01_tobb_su_aritma.docx",
+    "soru": "İhale ne zaman yapılacak?",
+    "beklenen_madde": 3,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "İhale **28.06.2022 tarihinde saat 14:00**’da yapılacaktır. [Madde 3, Sayfa 3]"
+  },
+  {
+    "belge": "s01_tobb_su_aritma.docx",
+    "soru": "İhale usulü nedir?",
+    "beklenen_madde": 3,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "İhale usulü **Pazarlık Usulü**dür. [Madde 3]"
+  },
+  {
+    "belge": "s01_tobb_su_aritma.docx",
+    "soru": "Teklifler kaç gün geçerli olmalı?",
+    "beklenen_madde": 24,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Tekliflerin geçerlilik süresi, ihale tarihinden itibaren **60 (altmış) takvim günüdür**. [Madde 24, Sayfa 24]"
+  },
+  {
+    "belge": "s01_tobb_su_aritma.docx",
+    "soru": "Geçici teminat oranı nedir?",
+    "beklenen_madde": 26,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Geçici teminat oranı, teklif edilen bedelin **% 3’ünden az olmamak üzere** istekli tarafından belirlenen tutar şeklindedir. [Madde 26, Sayfa ]"
+  },
+  {
+    "belge": "s01_tobb_su_aritma.docx",
+    "soru": "Kısmi teklif verilebilir mi?",
+    "beklenen_madde": 19,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Hayır, bu ihalede işin tamamı için teklif verilecektir ve kısmi teklif verilmeyecektir. [Madde 19, Sayfa 19]"
+  },
+  {
+    "belge": "s01_tobb_su_aritma.docx",
+    "soru": "Fiyat farkı verilecek mi?",
+    "beklenen_madde": 45,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Hayır, **fiyat farkı verilmeyecektir**. [Madde 45]"
+  },
+  {
+    "belge": "s01_tobb_su_aritma.docx",
+    "soru": "İhaleyi hangi firma kazandı?",
+    "beklenen_madde": null,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu bilgiyi bulamadım."
+  },
+  {
+    "belge": "s02_iku_guvenlik.pdf",
+    "soru": "İhale tarihi nedir?",
+    "beklenen_madde": 3,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "İhale tarihi 18/12/2024 Çarşamba günü, saat .15:00’dır. [Madde 3, Sayfa 1]"
+  },
+  {
+    "belge": "s02_iku_guvenlik.pdf",
+    "soru": "Tekliflerin geçerlilik süresi ne kadar?",
+    "beklenen_madde": 24,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Tekliflerin geçerlilik süresi, ihale tarihinden itibaren 60 (altmış) takvim günüdür. [Madde 24, Sayfa 10]"
+  },
+  {
+    "belge": "s02_iku_guvenlik.pdf",
+    "soru": "Ne kadar geçici teminat vermem gerekiyor?",
+    "beklenen_madde": 26,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Teklif ettikleri **yıllık sözleşme bedelinin en az %3’ü oranında** geçici teminat vermeniz gerekiyor. [Madde 26, Sayfa 10]"
+  },
+  {
+    "belge": "s02_iku_guvenlik.pdf",
+    "soru": "Kısmi teklif verebilir miyim?",
+    "beklenen_madde": 20,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Kısmi teklif veremezsiniz. (Bu iş için kısmi teklif verilemez.) [Madde 20, Sayfa 9]"
+  },
+  {
+    "belge": "s02_iku_guvenlik.pdf",
+    "soru": "Kesin teminat oranı ve süresi nedir?",
+    "beklenen_madde": 40,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Kesin teminat oranı, ihale üzerinde bırakılan istekliden sözleşme imzalanmadan önce imzalanan yıllık sözleşme bedelinin %6’sı olarak alınır. [Madde 40, Sayfa 14]  \n\nKesin teminatın süresi ise sözleşme süresi + 6 ay kadardır. [Madde 40, Sayfa 14]"
+  },
+  {
+    "belge": "s02_iku_guvenlik.pdf",
+    "soru": "İhaleyi hangi firma kazandı?",
+    "beklenen_madde": null,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu bilgiyi bulamadım."
+  },
+  {
+    "belge": "s03_halic_su_sebeke.pdf",
+    "soru": "Son teklif verme tarihi ne?",
+    "beklenen_madde": 3,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Son teklif verme tarihi **10.02.2026**’dır. [Madde 3, Sayfa 1]"
+  },
+  {
+    "belge": "s03_halic_su_sebeke.pdf",
+    "soru": "Teklif geçerlilik süresi kaç gün?",
+    "beklenen_madde": 24,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Tekliflerin geçerlilik süresi ihale tarihinden itibaren **120 (Yüzyirmi) takvim günüdür**. [Madde 24, Sayfa 8]"
+  },
+  {
+    "belge": "s03_halic_su_sebeke.pdf",
+    "soru": "Geçici teminat yüzde kaç?",
+    "beklenen_madde": 26,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Geçici teminat, teklif edilen bedelin **en az %3’ü** oranında olacak şekilde isteklilerce kendi belirlenen tutarda verilmelidir. [Madde 26, Sayfa 8]"
+  },
+  {
+    "belge": "s03_halic_su_sebeke.pdf",
+    "soru": "Kısmi teklif kabul ediliyor mu?",
+    "beklenen_madde": 19,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Bu ihalede **kısmi teklif verilmeyecektir**, yani **kısmi teklif kabul edilmiyor**. [Madde 19, Sayfa 7]"
+  },
+  {
+    "belge": "s03_halic_su_sebeke.pdf",
+    "soru": "Kesin teminat ne kadar alınacak?",
+    "beklenen_madde": 38,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Kesin teminat, ihale üzerinde bırakılan istekliden **%6 oranında** alınacaktır. [Madde 38, Sayfa 11]"
+  },
+  {
+    "belge": "s03_halic_su_sebeke.pdf",
+    "soru": "Ekonomik açıdan en avantajlı teklif nasıl belirlenecek?",
+    "beklenen_madde": 35,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Bu ihalede ekonomik açıdan en avantajlı teklif, teklif edilen fiyatların en düşük olanıdır. [Madde 35, Sayfa 10]"
+  },
+  {
+    "belge": "s03_halic_su_sebeke.pdf",
+    "soru": "İhaleyi hangi firma kazandı?",
+    "beklenen_madde": null,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu bilgiyi bulamadım."
+  },
+  {
+    "belge": "s04_dhmi_elektrik.pdf",
+    "soru": "İhale hangi gün ve saatte?",
+    "beklenen_madde": 3,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "İhale **03.11.2026** tarihinde, **Saat 10:00**’da yapılacaktır. [Madde 3, Sayfa 1]"
+  },
+  {
+    "belge": "s04_dhmi_elektrik.pdf",
+    "soru": "Teklifler ne kadar süre geçerli?",
+    "beklenen_madde": 24,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Tekliflerin geçerlilik süresi, ihale tarihinden itibaren **90 - Doksan takvim günüdür**. [Madde 24, Sayfa 7]"
+  },
+  {
+    "belge": "s04_dhmi_elektrik.pdf",
+    "soru": "Geçici teminat oranı nedir?",
+    "beklenen_madde": 26,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Geçici teminat oranı, teklif edilen bedelin **% 3’ünden az olmamak üzere** isteklinin belirleyeceği tutardır. [Madde 26, Sayfa 8]"
+  },
+  {
+    "belge": "s04_dhmi_elektrik.pdf",
+    "soru": "İşin bir kısmına teklif verebilir miyim?",
+    "beklenen_madde": 20,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Bu ihalede işin tamamı için teklif verilecektir; işin bir kısmına teklif verilemez. [Madde 20, Sayfa 7]"
+  },
+  {
+    "belge": "s04_dhmi_elektrik.pdf",
+    "soru": "Kesin teminat yüzde kaç?",
+    "beklenen_madde": 37,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Kesin teminat oranı %6’dır. [Madde 37, Sayfa 11]"
+  },
+  {
+    "belge": "s04_dhmi_elektrik.pdf",
+    "soru": "Fiyat farkı hesaplanacak mı?",
+    "beklenen_madde": 43,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Evet. Sözleşmenin uygulanması sırasında “fiyat farkı” hesaplanacaktır. [Madde 43, Sayfa 13]"
+  },
+  {
+    "belge": "s04_dhmi_elektrik.pdf",
+    "soru": "İhaleyi hangi firma kazandı?",
+    "beklenen_madde": null,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu bilgiyi bulamadım."
+  },
+  {
+    "belge": "s05_halic_sigorta.pdf",
+    "soru": "İhale tarihi ne zaman?",
+    "beklenen_madde": 3,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "İhale (son teklif verme) tarihi **23.12.2025**’tir. [Madde 3, Sayfa 1]"
+  },
+  {
+    "belge": "s05_halic_sigorta.pdf",
+    "soru": "Tekliflerin geçerlilik süresi kaç gün?",
+    "beklenen_madde": 24,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Tekliflerin geçerlilik süresi **ihale tarihinden itibaren 120 takvim günüdür**. [Madde 24, Sayfa 8]"
+  },
+  {
+    "belge": "s05_halic_sigorta.pdf",
+    "soru": "Geçici teminat oranı ne?",
+    "beklenen_madde": 26,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Geçici teminat oranı teklif edilen bedelin % 3’ünden az olmamak üzere isteklinin kendi belirleyeceği tutardır. [Madde 26, Sayfa 9]"
+  },
+  {
+    "belge": "s05_halic_sigorta.pdf",
+    "soru": "Kısmi teklif verilebiliyor mu?",
+    "beklenen_madde": 19,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Bu ihalede **kısmi teklif verilmeyecektir**. [Madde 19, Sayfa 7]"
+  },
+  {
+    "belge": "s05_halic_sigorta.pdf",
+    "soru": "Kesin teminat alınacak mı?",
+    "beklenen_madde": 38,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Kesin teminat alınmayacaktır; ihale üzerinde bırakılan istekliden kesin teminat istenmeyecektir. [Madde 38, Sayfa 11]"
+  },
+  {
+    "belge": "s05_halic_sigorta.pdf",
+    "soru": "İhaleyi hangi firma kazandı?",
+    "beklenen_madde": null,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu bilgiyi bulamadım."
+  },
+  {
+    "belge": "s06_meb_yemek.pdf",
+    "soru": "Teklifler kaç gün geçerli?",
+    "beklenen_madde": 24,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Tekliflerin geçerlilik süresi ihale tarihinden itibaren **120 (yüz yirmi) takvim günüdür**. [Madde 24, Sayfa 18]"
+  },
+  {
+    "belge": "s06_meb_yemek.pdf",
+    "soru": "Geçici teminat ne kadar?",
+    "beklenen_madde": 26,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Geçici teminat, teklif edilen bedelin **%3’ünden az olmamak üzere** isteklinin kendi belirleyeceği tutarda verilecektir; teklif edilen bedelin **%3’ünden az oranda** geçici teminat veren isteklinin teklifi değerlendirme dışı bırakılır. [Madde 26, Sayfa 20]"
+  },
+  {
+    "belge": "s06_meb_yemek.pdf",
+    "soru": "Kısmi teklif verilebilir mi?",
+    "beklenen_madde": 20,
+    "kaynak": true,
+    "bilgi": false,
+    "cevap": "Bu ihalede kısmi teklif verilebilir. [Madde 20, Sayfa 17]"
+  },
+  {
+    "belge": "s06_meb_yemek.pdf",
+    "soru": "Kesin teminat oranı nedir?",
+    "beklenen_madde": 40,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "İhale üzerinde bırakılan istekliden sözleşme imzalanmadan önce **teklif fiyatının sınır değere eşit veya üzerinde olması halinde %6**, **sınır değerin altında olması halinde ise yaklaşık maliyetin %9’u** oranında kesin teminat alınır. [Madde 40, Sayfa 27]"
+  },
+  {
+    "belge": "s06_meb_yemek.pdf",
+    "soru": "Bu ihalede fiyat farkı var mı?",
+    "beklenen_madde": 46,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Bu ihalede fiyat farkı verilmeyecektir. [Madde 46, Sayfa 30]"
+  },
+  {
+    "belge": "s06_meb_yemek.pdf",
+    "soru": "İhaleyi hangi firma kazandı?",
+    "beklenen_madde": null,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu bilgiyi bulamadım."
+  },
+  {
+    "belge": "s07_lokman_hekim_guvenlik.pdf",
+    "soru": "Son teklif verme tarihi nedir?",
+    "beklenen_madde": 3,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Son teklif verme tarihi 20.02.2023’tür. [Madde 3, Sayfa 1]"
+  },
+  {
+    "belge": "s07_lokman_hekim_guvenlik.pdf",
+    "soru": "Teklif geçerlilik süresi ne kadar?",
+    "beklenen_madde": 24,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Tekliflerin geçerlilik süresi, ihale tarihinden itibaren **90 (doksan) takvim günüdür**. [Madde 24, Sayfa 8]"
+  },
+  {
+    "belge": "s07_lokman_hekim_guvenlik.pdf",
+    "soru": "Geçici teminat vermem gerekiyor mu?",
+    "beklenen_madde": 26,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Hayır. Bu ihalede isteklilerden **geçici teminat alınmayacaktır**. [Madde 26, Sayfa 8]"
+  },
+  {
+    "belge": "s07_lokman_hekim_guvenlik.pdf",
+    "soru": "Kısmi teklif verilebilir mi?",
+    "beklenen_madde": 19,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Bu ihalede **kısmi teklif verilmeyecektir**. [Madde 19, Sayfa 7]"
+  },
+  {
+    "belge": "s07_lokman_hekim_guvenlik.pdf",
+    "soru": "Kesin teminat oranı nedir?",
+    "beklenen_madde": 38,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Kesin teminat oranı, sözleşme bedelinin %6’sıdır. [Madde 38, Sayfa 10]"
+  },
+  {
+    "belge": "s07_lokman_hekim_guvenlik.pdf",
+    "soru": "İhaleyi hangi firma kazandı?",
+    "beklenen_madde": null,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu bilgiyi bulamadım."
+  },
+  {
+    "belge": "s08_kucukyali_spor_yapim.pdf",
+    "soru": "İhale ne zaman?",
+    "beklenen_madde": 3,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede ihale (son teklif verme) tarihi **05.10.2016** ve ihale (son teklif verme) saati **10:30** olarak belirtilmiştir. [Madde 3, Sayfa 3]"
+  },
+  {
+    "belge": "s08_kucukyali_spor_yapim.pdf",
+    "soru": "Teklifler kaç gün geçerli olacak?",
+    "beklenen_madde": 24,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Tekliflerin geçerlilik süresi, ihale tarihinden itibaren **30 (Otuz) takvim günüdür**. [Madde 24, Sayfa 16]"
+  },
+  {
+    "belge": "s08_kucukyali_spor_yapim.pdf",
+    "soru": "Geçici teminat oranı nedir?",
+    "beklenen_madde": 26,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Geçici teminat oranı, teklif edilen bedelin **% 3’ünden az olmamak üzere** isteklinin kendi belirleyeceği tutardır. [Madde 26, Sayfa 16]"
+  },
+  {
+    "belge": "s08_kucukyali_spor_yapim.pdf",
+    "soru": "Kısmi teklif verilebilir mi?",
+    "beklenen_madde": 20,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu ihalede **kısmi teklif verilemeyeceği**, işin **tamamı için teklif verilmesi** gerektiği belirtilmektedir. [Madde 20, Sayfa 15]"
+  },
+  {
+    "belge": "s08_kucukyali_spor_yapim.pdf",
+    "soru": "Kesin teminat yüzde kaç?",
+    "beklenen_madde": 40,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Kesin teminat, ihale üzerinde bırakılan istekliden sözleşme imzalanmadan önce ihale bedelinin **% 6’sı** oranında alınır. [Madde 40, Sayfa 20]"
+  },
+  {
+    "belge": "s08_kucukyali_spor_yapim.pdf",
+    "soru": "İhaleyi hangi firma kazandı?",
+    "beklenen_madde": null,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu bilgiyi bulamadım."
+  },
+  {
+    "belge": "s09_medeniyet_teknopark.pdf",
+    "soru": "İhale tarihi nedir?",
+    "beklenen_madde": 3,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "İhale tarihi **23.02.2026**’dır. [Madde 3, Sayfa 2]"
+  },
+  {
+    "belge": "s09_medeniyet_teknopark.pdf",
+    "soru": "Teklifler en az kaç gün geçerli olmalı?",
+    "beklenen_madde": 25,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Tekliflerin geçerlilik süresi, ihale tarihinden itibaren en az **60 takvim günü** olmalıdır. [Madde 25, Sayfa 7]"
+  },
+  {
+    "belge": "s09_medeniyet_teknopark.pdf",
+    "soru": "Geçici teminat oranı nedir?",
+    "beklenen_madde": 26,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Geçici teminat, teklif edilen bedelin %3’ünden az olmamak üzere isteklilerin kendi belirleyeceği tutarda verilecektir. [Madde 26, Sayfa 7]"
+  },
+  {
+    "belge": "s09_medeniyet_teknopark.pdf",
+    "soru": "Kısmi teklif kabul edilir mi?",
+    "beklenen_madde": 21,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Kısmi teklif kabul edilmez; sözleşme makamı tarafından gerçekleştirilecek ihalelerde lotlar halinde ihaleye çıkılmamış ise işin tamamı için teklif sunulur ve kısmi teklifler kabul edilmez. [Madde 21, Sayfa 6]"
+  },
+  {
+    "belge": "s09_medeniyet_teknopark.pdf",
+    "soru": "Kesin teminat oranı ne kadar?",
+    "beklenen_madde": 29,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Kesin teminat oranı, sözleşme bedelinin en az %6’sıdır. [Madde 29, Sayfa 23]"
+  },
+  {
+    "belge": "s09_medeniyet_teknopark.pdf",
+    "soru": "İhaleyi hangi firma kazandı?",
+    "beklenen_madde": null,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu bilgiyi bulamadım."
+  },
+  {
+    "belge": "s10_cizre_su_kuyusu.pdf",
+    "soru": "İhale tarihi ve saati nedir?",
+    "beklenen_madde": 3,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "İhale (son teklif verme) tarihi **21.08.2024** ve saat **11:00**’dır. [Madde 3, Sayfa 1]"
+  },
+  {
+    "belge": "s10_cizre_su_kuyusu.pdf",
+    "soru": "Teklif geçerlilik süresi kaç gün?",
+    "beklenen_madde": 24,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Tekliflerin geçerlilik süresi **45 (kırk beş) takvim günüdür**. [Madde 24, Sayfa 10]"
+  },
+  {
+    "belge": "s10_cizre_su_kuyusu.pdf",
+    "soru": "Geçici teminat oranı nedir?",
+    "beklenen_madde": 26,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Geçici teminat oranı isteklilerin teklif ettikleri bedelin **%3’ü**’dür (en az %3 olmayacak şekilde kendi belirleyecekleri tutarda geçici teminat vereceklerdir). [Madde 26, Sayfa 10]"
+  },
+  {
+    "belge": "s10_cizre_su_kuyusu.pdf",
+    "soru": "Kısmi teklif verilebilir mi?",
+    "beklenen_madde": 20,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Bu ihalede **işin tamamı için teklif verilecektir** ve bu nedenle **kısmi teklif verilemez**. [Madde 20, Sayfa 9]"
+  },
+  {
+    "belge": "s10_cizre_su_kuyusu.pdf",
+    "soru": "Kesin teminat oranı nedir?",
+    "beklenen_madde": 40,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Teklif fiyatının sınır değere eşit ve/veya üzerinde olması halinde kesin teminat oranı %6, sınır değerin altında olması halinde ise yaklaşık maliyetin %9’udur. [Madde 40, Sayfa 15]"
+  },
+  {
+    "belge": "s10_cizre_su_kuyusu.pdf",
+    "soru": "Fiyat farkı verilecek mi?",
+    "beklenen_madde": 46,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Sözleşmenin uygulanması sırasında **fiyat farkı hesaplanmayacaktır**; ancak mücbir sebepler veya idareden kaynaklanan nedenlerle işin bitim tarihinin **süre uzatımı verilmek suretiyle uzatılması** halinde, yürürlükte bulunan fiyat farkına ilişkin esaslar dikkate alınarak **fiyat farkı hesaplanacaktır**. [Madde 46, Sayfa 16]"
+  },
+  {
+    "belge": "s10_cizre_su_kuyusu.pdf",
+    "soru": "İhaleyi hangi firma kazandı?",
+    "beklenen_madde": null,
+    "kaynak": true,
+    "bilgi": true,
+    "cevap": "Belgede bu bilgiyi bulamadım."
+  }
+]

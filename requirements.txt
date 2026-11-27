@@ -5,4 +5,5 @@ langchain-chroma
 langchain-community
 langchain-text-splitters
 pypdf
+python-docx
 streamlit

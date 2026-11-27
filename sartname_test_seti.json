@@ -1,0 +1,86 @@
+[
+  {"belge": "s01_tobb_su_aritma.docx", "sorular": [
+    {"soru": "İhale ne zaman yapılacak?", "madde": 3, "kelime": ["28.06.2022", "28/06/2022", "28haziran2022"]},
+    {"soru": "İhale usulü nedir?", "madde": 3, "kelime": ["pazarlık"]},
+    {"soru": "Teklifler kaç gün geçerli olmalı?", "madde": 24, "kelime": ["60"]},
+    {"soru": "Geçici teminat oranı nedir?", "madde": 26, "kelime": ["%3", "yüzde3"]},
+    {"soru": "Kısmi teklif verilebilir mi?", "madde": 19, "kelime": ["tamamı", "verilemez", "verilmeyecek", "hayır"]},
+    {"soru": "Fiyat farkı verilecek mi?", "madde": 45, "kelime": ["verilmeyecek", "verilmez", "hayır"]},
+    {"soru": "İhaleyi hangi firma kazandı?", "madde": null}
+  ]},
+  {"belge": "s02_iku_guvenlik.pdf", "sorular": [
+    {"soru": "İhale tarihi nedir?", "madde": 3, "kelime": ["18/12/2024", "18.12.2024", "18aralık2024"]},
+    {"soru": "Tekliflerin geçerlilik süresi ne kadar?", "madde": 24, "kelime": ["60"]},
+    {"soru": "Ne kadar geçici teminat vermem gerekiyor?", "madde": 26, "kelime": ["%3", "yüzde3"]},
+    {"soru": "Kısmi teklif verebilir miyim?", "madde": 20, "kelime": ["tamamı", "verilemez", "verilmeyecek", "hayır"]},
+    {"soru": "Kesin teminat oranı ve süresi nedir?", "madde": 40, "kelime": ["%6", "yüzde6"]},
+    {"soru": "İhaleyi hangi firma kazandı?", "madde": null}
+  ]},
+  {"belge": "s03_halic_su_sebeke.pdf", "sorular": [
+    {"soru": "Son teklif verme tarihi ne?", "madde": 3, "kelime": ["10.02.2026", "10/02/2026", "10şubat2026"]},
+    {"soru": "Teklif geçerlilik süresi kaç gün?", "madde": 24, "kelime": ["120"]},
+    {"soru": "Geçici teminat yüzde kaç?", "madde": 26, "kelime": ["%3", "yüzde3"]},
+    {"soru": "Kısmi teklif kabul ediliyor mu?", "madde": 19, "kelime": ["tamamı", "verilemez", "verilmeyecek", "hayır"]},
+    {"soru": "Kesin teminat ne kadar alınacak?", "madde": 38, "kelime": ["%6", "yüzde6"]},
+    {"soru": "Ekonomik açıdan en avantajlı teklif nasıl belirlenecek?", "madde": 35, "kelime": ["endüşük"]},
+    {"soru": "İhaleyi hangi firma kazandı?", "madde": null}
+  ]},
+  {"belge": "s04_dhmi_elektrik.pdf", "sorular": [
+    {"soru": "İhale hangi gün ve saatte?", "madde": 3, "kelime": ["03.11.2026", "3.11.2026", "03/11/2026", "3kasım2026"]},
+    {"soru": "Teklifler ne kadar süre geçerli?", "madde": 24, "kelime": ["90"]},
+    {"soru": "Geçici teminat oranı nedir?", "madde": 26, "kelime": ["%3", "yüzde3"]},
+    {"soru": "İşin bir kısmına teklif verebilir miyim?", "madde": 20, "kelime": ["tamamı", "verilemez", "verilmeyecek", "hayır"]},
+    {"soru": "Kesin teminat yüzde kaç?", "madde": 37, "kelime": ["%6", "yüzde6"]},
+    {"soru": "Fiyat farkı hesaplanacak mı?", "madde": 43, "kelime": ["hesaplanacak", "verilecek", "evet"]},
+    {"soru": "İhaleyi hangi firma kazandı?", "madde": null}
+  ]},
+  {"belge": "s05_halic_sigorta.pdf", "sorular": [
+    {"soru": "İhale tarihi ne zaman?", "madde": 3, "kelime": ["23.12.2025", "23/12/2025", "23aralık2025"]},
+    {"soru": "Tekliflerin geçerlilik süresi kaç gün?", "madde": 24, "kelime": ["120"]},
+    {"soru": "Geçici teminat oranı ne?", "madde": 26, "kelime": ["%3", "yüzde3"]},
+    {"soru": "Kısmi teklif verilebiliyor mu?", "madde": 19, "kelime": ["tamamı", "verilemez", "verilmeyecek", "hayır"]},
+    {"soru": "Kesin teminat alınacak mı?", "madde": 38, "kelime": ["istenmeyecek", "alınmayacak", "alınmaz", "hayır"]},
+    {"soru": "İhaleyi hangi firma kazandı?", "madde": null}
+  ]},
+  {"belge": "s06_meb_yemek.pdf", "sorular": [
+    {"soru": "Teklifler kaç gün geçerli?", "madde": 24, "kelime": ["120"]},
+    {"soru": "Geçici teminat ne kadar?", "madde": 26, "kelime": ["%3", "yüzde3"]},
+    {"soru": "Kısmi teklif verilebilir mi?", "madde": 20, "kelime": ["ayrıayrı", "birlikte"]},
+    {"soru": "Kesin teminat oranı nedir?", "madde": 40, "kelime": ["%6", "yüzde6"]},
+    {"soru": "Bu ihalede fiyat farkı var mı?", "madde": 46, "kelime": ["verilmeyecek", "verilmez", "hayır"]},
+    {"soru": "İhaleyi hangi firma kazandı?", "madde": null}
+  ]},
+  {"belge": "s07_lokman_hekim_guvenlik.pdf", "sorular": [
+    {"soru": "Son teklif verme tarihi nedir?", "madde": 3, "kelime": ["20.02.2023", "20/02/2023", "20şubat2023"]},
+    {"soru": "Teklif geçerlilik süresi ne kadar?", "madde": 24, "kelime": ["90"]},
+    {"soru": "Geçici teminat vermem gerekiyor mu?", "madde": 26, "kelime": ["alınmayacak", "alınmaz", "istenmeyecek", "hayır", "gerekmiyor"]},
+    {"soru": "Kısmi teklif verilebilir mi?", "madde": 19, "kelime": ["tamamı", "verilemez", "verilmeyecek", "hayır"]},
+    {"soru": "Kesin teminat oranı nedir?", "madde": 38, "kelime": ["%6", "yüzde6"]},
+    {"soru": "İhaleyi hangi firma kazandı?", "madde": null}
+  ]},
+  {"belge": "s08_kucukyali_spor_yapim.pdf", "sorular": [
+    {"soru": "İhale ne zaman?", "madde": 3, "kelime": ["05.10.2016", "5.10.2016", "05/10/2016", "5ekim2016"]},
+    {"soru": "Teklifler kaç gün geçerli olacak?", "madde": 24, "kelime": ["30"]},
+    {"soru": "Geçici teminat oranı nedir?", "madde": 26, "kelime": ["%3", "yüzde3"]},
+    {"soru": "Kısmi teklif verilebilir mi?", "madde": 20, "kelime": ["tamamı", "verilemez", "verilmeyecek", "hayır"]},
+    {"soru": "Kesin teminat yüzde kaç?", "madde": 40, "kelime": ["%6", "yüzde6"]},
+    {"soru": "İhaleyi hangi firma kazandı?", "madde": null}
+  ]},
+  {"belge": "s09_medeniyet_teknopark.pdf", "sorular": [
+    {"soru": "İhale tarihi nedir?", "madde": 3, "kelime": ["23.02.2026", "23/02/2026", "23şubat2026"]},
+    {"soru": "Teklifler en az kaç gün geçerli olmalı?", "madde": 25, "kelime": ["60"]},
+    {"soru": "Geçici teminat oranı nedir?", "madde": 26, "kelime": ["%3", "yüzde3"]},
+    {"soru": "Kısmi teklif kabul edilir mi?", "madde": 21, "kelime": ["tamamı", "kabuledilmeyecek", "kabuledilmez", "hayır"]},
+    {"soru": "Kesin teminat oranı ne kadar?", "madde": 29, "kelime": ["%6", "yüzde6"]},
+    {"soru": "İhaleyi hangi firma kazandı?", "madde": null}
+  ]},
+  {"belge": "s10_cizre_su_kuyusu.pdf", "sorular": [
+    {"soru": "İhale tarihi ve saati nedir?", "madde": 3, "kelime": ["21.08.2024", "21/08/2024", "21ağustos2024"]},
+    {"soru": "Teklif geçerlilik süresi kaç gün?", "madde": 24, "kelime": ["45"]},
+    {"soru": "Geçici teminat oranı nedir?", "madde": 26, "kelime": ["%3", "yüzde3"]},
+    {"soru": "Kısmi teklif verilebilir mi?", "madde": 20, "kelime": ["tamamı", "verilemez", "verilmeyecek", "hayır"]},
+    {"soru": "Kesin teminat oranı nedir?", "madde": 40, "kelime": ["%6", "yüzde6"]},
+        {"soru": "Fiyat farkı verilecek mi?", "madde": 46, "kelime": ["hesaplanmayaca", "verilmeyece", "verilmez", "hayır"]},
+    {"soru": "İhaleyi hangi firma kazandı?", "madde": null}
+  ]}
+]
