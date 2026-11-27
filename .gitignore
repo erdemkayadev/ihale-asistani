@@ -1,3 +1,5 @@
 .venv/
 .env
 __pycache__/
+vektor_db/
+.vscode/
