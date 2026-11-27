@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS sonuclar (
     para_birimi      TEXT,
     sozlesme_tarihi  TEXT,
     yuklenici        TEXT,
+    kisim_yaklasik   REAL,              -- "Sözleşmeye Esas Kısımlarının Yaklaşık Maliyeti" (kısımlı ihalede)
     PRIMARY KEY (bulten_tarihi, tur, ilan_turu, sira)
 );
 CREATE TABLE IF NOT EXISTS islenen_dosyalar (
@@ -54,19 +55,34 @@ CREATE INDEX IF NOT EXISTS ix_ilan_ikn    ON ilanlar (ikn);
 CREATE INDEX IF NOT EXISTS ix_sonuc_ikn   ON sonuclar (ikn);
 CREATE INDEX IF NOT EXISTS ix_sonuc_firma ON sonuclar (yuklenici);      -- "şu firma neler kazandı" hızlı gelsin
 """
+# Sonradan eklenen sütunlar. Eski veritabanında yoksa baglan() otomatik ekler (veri silinmez).
+# Yeni sütun eklerken hem SEMA'ya hem buraya yaz.
+EK_SUTUNLAR = {
+    "sonuclar": {"kisim_yaklasik": "REAL"},
+}
 ANAHTAR = ["bulten_tarihi", "tur", "ilan_turu", "sira"]             # bir kaydı benzersiz yapan alanlar
 ALANLAR = {
     "ilanlar": ANAHTAR + ["ikn", "idare", "il", "konu", "ihale_tarihi", "usul", "gecici_teminat", "gecerlilik_gun"],
     "sonuclar": ANAHTAR + ["ikn", "idare", "konu", "ihale_tarihi", "usul", "yaklasik_maliyet", "kisimli",
                            "dokuman_indiren", "teklif_sayisi", "gecerli_teklif", "sozlesme_bedeli", "para_birimi",
-                           "sozlesme_tarihi", "yuklenici"],
+                           "sozlesme_tarihi", "yuklenici", "kisim_yaklasik"],
 }
 
 
+def _sutunlari_tamamla(db):
+    """Eski veritabanında eksik olan sütunları ekler (küçük bir 'migration')."""
+    for tablo, sutunlar in EK_SUTUNLAR.items():
+        var = {s[1] for s in db.execute(f"PRAGMA table_info({tablo})")}   # tablodaki mevcut sütun adları
+        for ad, tip in sutunlar.items():
+            if ad not in var:
+                db.execute(f"ALTER TABLE {tablo} ADD COLUMN {ad} {tip}")  # eski kayıtlarda bu sütun boş (NULL) kalır
+
+
 def baglan():
-    """Veritabanına bağlanır; tablolar yoksa kurar."""
+    """Veritabanına bağlanır; tablolar yoksa kurar, eksik sütunları ekler."""
     db = sqlite3.connect(DB_YOLU)
     db.executescript(SEMA)
+    _sutunlari_tamamla(db)
     return db
 
 

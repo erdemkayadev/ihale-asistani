@@ -156,6 +156,9 @@ def _sonuc_alanlari(blok):
         "yaklasik_maliyet": _sayi(_alan(blok, r"Yaklaşık Maliyeti[ \t]*:[ \t]*([\d.,]+)[ \t]*[A-Z]{3}")),   # boşsa alt satıra kaymasın
         # Kısımlı ihalede yaklaşık maliyet tüm ihalenin, sözleşme bedeli tek kısmındır: oran hesaplanmamalı
         "kisimli": int("Kısımlarının" in blok),
+        # "e) Sözleşmeye Esas Kısımlarının / Yaklaşık Maliyeti / : 61.500,00 TRY" (3 satıra bölünmüş olabilir).
+        # Eski bültenlerde kısmın gerçek maliyeti; 2026'da çoğu zaman toplamla aynı yazılıyor.
+        "kisim_yaklasik": _sayi(_alan(blok, r"Kısımlarının\s*Yaklaşık\s*Maliyeti\s*:\s*([\d.,]+)\s*[A-Z]{3}")),
         "dokuman_indiren": _tam(_alan(blok, r"indiren sayısı\s*:[ \t]*(\d+)[ \t]*\n")),
         "teklif_sayisi": _tam(_alan(blok, r"Toplam Teklif Sayısı[ \t]*:[ \t]*(\d+)")),
         "gecerli_teklif": _tam(_alan(blok, r"Geçerli Teklif Sayısı[ \t]*:[ \t]*(\d+)")),
