@@ -1,8 +1,8 @@
 import re                                                           # bültendeki kalıpları yakalamak için
-import sqlite3                                                      # kayıtları tek bir veritabanı dosyasına yazmak için
 import sys                                                          # komut satırından dosya adı almak için
 from pathlib import Path                                            # klasördeki PDF'leri listelemek için
 from pypdf import PdfReader                                         # PDF'ten metin çıkarmak için
+import veri                                                         # veritabanı işleri (tüm SQL orada)
 
 AYLAR = {"OCAK": 1, "ŞUBAT": 2, "MART": 3, "NİSAN": 4, "MAYIS": 5, "HAZİRAN": 6, "TEMMUZ": 7,
          "AĞUSTOS": 8, "EYLÜL": 9, "EKİM": 10, "KASIM": 11, "ARALIK": 12}
@@ -28,6 +28,16 @@ def _sayi(metin):
         return None
 
 
+def _tam(metin):
+    """'12' -> 12, boşsa None."""
+    return int(metin) if metin and metin.isdigit() else None
+
+
+def _iso(tarih):
+    """'14.10.2026' -> '2026-10-14' (sıralanabilir tarih biçimi)."""
+    return f"{tarih[6:10]}-{tarih[3:5]}-{tarih[0:2]}" if tarih else None
+
+
 def bulteni_oku(yol):
     """Bülten PDF'ini okur. Döner: (bilgi sözlüğü, kayıt listesi)."""
     metin = "\n".join(s.extract_text() or "" for s in PdfReader(yol).pages)
@@ -49,23 +59,52 @@ def bulteni_oku(yol):
     for i, e in enumerate(es):
         blok = metin[e.start(): es[i + 1].start() if i + 1 < len(es) else len(metin)]
         once = [ad for konum, ad in bolumler if konum < e.start()]  # bu ilandan önceki son bölüm başlığı
-        kayit = {**bilgi, "sira": int(e.group(1)), "ikn": e.group(2), "ilan_turu": once[-1] if once else None}
+        kayit = {**bilgi, "sira": int(e.group(1)), "ikn": e.group(2), "ilan_turu": once[-1] if once else "BİLİNMİYOR"}
         kayit.update(_sonuc_alanlari(blok) if bilgi["sonuc"] else _ilan_alanlari(blok))
+        if bilgi["sonuc"] and "-" in kayit["ikn"]:                  # "2024/1406909-4": kısım numaralı İKN
+            kayit["kisimli"] = 1
         kayitlar.append(kayit)
     return bilgi, kayitlar
 
 
+def _ilk(blok, *desenler):
+    """Desenleri sırayla dener, ilk bulunan değeri döndürür (bülten biçimi yıllar içinde değişti)."""
+    for desen in desenler:
+        deger = _alan(blok, desen)
+        if deger:
+            return deger
+    return None
+
+
+def _baslik_idaresi(blok):
+    """Eski bültenlerde idare adı, ilan başlığının hemen altında yazar:
+    '1.  2022/10133  AKARYAKIT SATIN ALINACAKTIR' / 'TARIM VE ORMAN ... MÜDÜRLÜĞÜ' / boş satır."""
+    ust = re.split(r"\n[ \t]*\n", blok, maxsplit=1)[0].split("\n")    # ilk boş satıra kadar olan satırlar
+    for i, satir in enumerate(ust):
+        if re.search(r"(?:CAKTIR|CEKTİR)\.?\s*$", satir):          # başlık "...ALINACAKTIR" ile biter
+            return " ".join(s.strip() for s in ust[i + 1:]).strip() or None
+    return None
+
+
 def _ilan_alanlari(blok):
-    """Yeni ihale ilanından alanları çıkarır."""
-    adres = _alan(blok, r"1\.2\.\s*Adresi\s*:\s*(.*?)\n\s*1\.3\.")
+    """Yeni ihale ilanından alanları çıkarır. 2022'den bugüne üç farklı biçim desteklenir."""
+    adres = _ilk(blok, r"1\.2\.\s*Adresi\s*:\s*(.*?)\n\s*1\.3\.",                       # 2025 sonu ve sonrası
+                 r"İdarenin\s*\n.*?[ab]\)\s*Adresi\s*:\s*(.*?)\n\s*[b-d]\)")            # daha eski bültenler
+    konu = _ilk(blok, r"3\.1\.?\s*Adı\s*:\s*(.*?)\n\s*3\.2\.",
+                r"İhale konusu[^\n]*\n\s*a\)\s*Adı\s*:\s*(.*?)\n\s*b\)")
+    if not konu:                                                    # en eski biçim: "Akaryakıt mal alımı 4734 sayılı ..."
+        cumle = _alan(re.split(r"\n[ \t]*\n", blok, maxsplit=1)[-1], r"^\s*(.*?)\s+4734\s+sayılı")
+        konu = re.sub(r"\s+(?:mal\s+alımı|hizmet\s+alımı|yapım\s+işi|alımı)$", "", cumle or "") or None
+    tarih = re.search(r"[Tt]arih(?:i)?\s+ve\s+[Ss]aati\s*:\s*(\d\d)\.(\d\d)\.(\d{4})\s*-\s*(\d\d)[:.](\d\d)", blok)
     return {
-        "idare": _alan(blok, r"1\.1\.\s*Adı\s*:\s*(.*?)\n\s*1\.2\."),
+        "idare": _ilk(blok, r"1\.1\.\s*Adı\s*:\s*(.*?)\n\s*1\.2\.",
+                      r"İdarenin\s*\n\s*a\)\s*Adı\s*:\s*(.*?)\n\s*b\)") or _baslik_idaresi(blok),
         "il": _alan(adres or "", r"/\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*$"),  # adresin sonundaki "/İstanbul"
-        "ihale_tarihi": _alan(blok, r"2\.1\.\s*Tarih ve Saati\s*:\s*(\d\d\.\d\d\.\d{4}\s*-\s*\d\d:\d\d)"),
-        "konu": _alan(blok, r"3\.1\.?\s*Adı\s*:\s*(.*?)\n\s*3\.2\."),
+        "konu": konu,
+        "ihale_tarihi": f"{tarih[3]}-{tarih[2]}-{tarih[1]} {tarih[4]}:{tarih[5]}" if tarih else None,   # "2026-12-22 10:00"
         "usul": _alan(blok, r"(açık\s+ihale|belli\s+istekliler\s+arasında\s+ihale|pazarlık)\s+usulü\s+ile\s+ihale"),
-        "gecici_teminat": _alan(blok, r"teklif\s+ettikleri\s+bedelin\s*%\s*(\d+)"),
-        "gecerlilik_gun": _alan(blok, r"geçerlilik\s+süresi,\s+ihale\s+tarihinden\s+itibaren\s*(\d+)"),
+        "gecici_teminat": _tam(_alan(blok, r"teklif\s+ettikleri\s+bedelin\s*%\s*(\d+)")),
+        "gecerlilik_gun": _tam(_alan(blok, r"geçerlilik\s+süresi,\s+ihale\s+tarihinden\s+itibaren\s*(\d+)")),
     }
 
 
@@ -91,46 +130,35 @@ def _sonuc_alanlari(blok):
     return {
         "idare": _sonuc_idaresi(blok),
         "konu": _alan(blok, r"2-\s*İhale konusu[^\n]*\n\s*a\)\s*Adı\s*:\s*(.*?)\n\s*[b3]"),
-        "ihale_tarihi": _alan(blok, r"1-\s*İhalenin\s*\n\s*a\)\s*Tarihi\s*:\s*(\d\d\.\d\d\.\d{4})"),
+        "ihale_tarihi": _iso(_alan(blok, r"1-\s*İhalenin\s*\n\s*a\)\s*Tarihi\s*:\s*(\d\d\.\d\d\.\d{4})")),
         "usul": _alan(blok, r"Usulü\s*:\s*([^\n]+)"),
         "yaklasik_maliyet": _sayi(_alan(blok, r"Yaklaşık Maliyeti[ \t]*:[ \t]*([\d.,]+)[ \t]*[A-Z]{3}")),   # boşsa alt satıra kaymasın
         # Kısımlı ihalede yaklaşık maliyet tüm ihalenin, sözleşme bedeli tek kısmındır: oran hesaplanmamalı
         "kisimli": int("Kısımlarının" in blok),
-        "dokuman_indiren": _alan(blok, r"indiren sayısı\s*:[ \t]*(\d+)[ \t]*\n"),
-        "teklif_sayisi": _alan(blok, r"Toplam Teklif Sayısı[ \t]*:[ \t]*(\d+)"),
-        "gecerli_teklif": _alan(blok, r"Geçerli Teklif Sayısı[ \t]*:[ \t]*(\d+)"),
+        "dokuman_indiren": _tam(_alan(blok, r"indiren sayısı\s*:[ \t]*(\d+)[ \t]*\n")),
+        "teklif_sayisi": _tam(_alan(blok, r"Toplam Teklif Sayısı[ \t]*:[ \t]*(\d+)")),
+        "gecerli_teklif": _tam(_alan(blok, r"Geçerli Teklif Sayısı[ \t]*:[ \t]*(\d+)")),
         "sozlesme_bedeli": _sayi(bedel.group(1)) if bedel else None,
         "para_birimi": bedel.group(2) if bedel else None,
-        "sozlesme_tarihi": _alan(blok, r"4-\s*Sözleşmenin\s*\n\s*a\)\s*Tarihi\s*:\s*(\d\d\.\d\d\.\d{4})"),
+        "sozlesme_tarihi": _iso(_alan(blok, r"4-\s*Sözleşmenin\s*\n\s*a\)\s*Tarihi\s*:\s*(\d\d\.\d\d\.\d{4})")),
         "yuklenici": _alan(blok, r"Yüklenici(?:si)?\s*:\s*(.*?)\n\s*[e-g]\)"),     # "Yüklenicisi" ya da "Yüklenici"
     }
 
 
-# ---------- Veritabanı ----------
-
-ILAN_ALANLARI = ["bulten_tarihi", "tur", "ilan_turu", "sira", "ikn", "idare", "il", "konu", "ihale_tarihi",
-                 "usul", "gecici_teminat", "gecerlilik_gun"]
-SONUC_ALANLARI = ["bulten_tarihi", "tur", "ilan_turu", "sira", "ikn", "idare", "konu", "ihale_tarihi", "usul",
-                  "yaklasik_maliyet", "kisimli", "dokuman_indiren", "teklif_sayisi", "gecerli_teklif", "sozlesme_bedeli",
-                  "para_birimi", "sozlesme_tarihi", "yuklenici"]
-
-
-def veritabanina_yaz(kayitlar, sonuc, db_yolu="ihaleler.db"):
-    """Kayıtları SQLite'a yazar. Aynı bülten tekrar okunursa kayıtlar çoğalmaz, üzerine yazılır."""
-    tablo, alanlar = ("sonuclar", SONUC_ALANLARI) if sonuc else ("ilanlar", ILAN_ALANLARI)
-    db = sqlite3.connect(db_yolu)
-    db.execute(f"CREATE TABLE IF NOT EXISTS {tablo} ({', '.join(alanlar)}, "
-               f"PRIMARY KEY (bulten_tarihi, tur, ilan_turu, sira))")   # bir kaydın benzersiz kimliği
-    db.executemany(f"INSERT OR REPLACE INTO {tablo} VALUES ({', '.join('?' * len(alanlar))})",
-                   [[k.get(a) for a in alanlar] for k in kayitlar])
-    db.commit()
-    db.close()
-
+# ---------- Ana program ----------
 
 if __name__ == "__main__":
     klasor = Path(sys.argv[1] if len(sys.argv) > 1 else "belgeler/bulten")   # varsayılan: belgeler/bulten
-    for pdf in sorted(klasor.glob("*.pdf")):
-        bilgi, kayitlar = bulteni_oku(pdf)
-        veritabanina_yaz(kayitlar, bilgi["sonuc"])
-        print(f"{pdf.name}: {bilgi['tur']} {'sonuç' if bilgi['sonuc'] else 'ilan'} bülteni, "
+    pdfler = sorted(klasor.glob("*.pdf"))
+    yeni = [p for p in pdfler if not veri.islenmis_mi(p.name)]      # sadece daha önce okunmamış olanlar
+    print(f"{len(pdfler)} PDF var, {len(pdfler) - len(yeni)} tanesi daha önce okunmuş, {len(yeni)} yeni.")
+    for sira, pdf in enumerate(yeni, start=1):
+        try:
+            bilgi, kayitlar = bulteni_oku(pdf)
+        except Exception as hata:                                   # bozuk ya da farklı biçimli PDF: atla, devam et
+            print(f"[{sira}/{len(yeni)}] {pdf.name}: OKUNAMADI ({hata})")
+            continue
+        veri.kayitlari_yaz("sonuclar" if bilgi["sonuc"] else "ilanlar", kayitlar)
+        veri.islendi_isaretle(pdf.name, bilgi["bulten_tarihi"], bilgi["tur"], bilgi["sonuc"], len(kayitlar))
+        print(f"[{sira}/{len(yeni)}] {pdf.name}: {bilgi['tur']} {'sonuç' if bilgi['sonuc'] else 'ilan'} bülteni, "
               f"{bilgi['bulten_tarihi']}, {len(kayitlar)} kayıt")
