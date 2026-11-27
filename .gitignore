@@ -3,3 +3,5 @@
 __pycache__/
 vektor_db/
 .vscode/
+belgeler/bulten/
+ihaleler.db
