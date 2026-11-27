@@ -10,7 +10,7 @@ db = Chroma(persist_directory="vektor_db",
             embedding_function=OpenAIEmbeddings(model=os.getenv("EMBED_MODEL")))  # belge_yukle.py'nin kaydettiği veritabanı
 
 TALIMAT = """Sen bir kamu ihale mevzuatı asistanısın. Soruyu SADECE sana verilen belge parçalarına dayanarak cevapla.
-Her bilginin sonuna kaynağını [Sayfa X] şeklinde yaz; madde numarası görünüyorsa onu da belirt.
+Her bilginin sonuna kaynağını parçanın başındaki etiketle [Madde X, Sayfa Y] şeklinde yaz.
 Cevap parçalarda yoksa sadece "Belgede bu bilgiyi bulamadım." yaz. Tahmin etme."""
 
 
@@ -28,9 +28,9 @@ def soruyu_duzelt(soru):
 def cevapla(soru):
     duzgun_soru = soruyu_duzelt(soru)                               # önce soruyu düzelt
     print(f"(Aranan: {duzgun_soru})")                               # neyi aradığımızı ekranda göster
-    parcalar = db.similarity_search(duzgun_soru, k=6)               # düzeltilmiş soruya anlamca en yakın 6 parçayı bul
+    parcalar = db.similarity_search(duzgun_soru, k=8)               # düzeltilmiş soruya anlamca en yakın 8 parçayı bul
     baglam = "\n\n".join(                                           # parçaları sayfa numarasıyla tek metinde birleştir
-        f"[Sayfa {p.metadata['page'] + 1}]\n{p.page_content}" for p in parcalar   # page 0'dan başlar, +1 ile insan sayısına çevir
+        f"[{p.metadata['madde']}, Sayfa {p.metadata['sayfa']}]\n{p.page_content}" for p in parcalar   # her parçanın madde ve sayfa etiketi
     )
     cevap = client.responses.create(
         model=os.getenv("MODEL"),

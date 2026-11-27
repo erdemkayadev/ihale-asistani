@@ -1,0 +1,22 @@
+[
+  {"soru": "Açık ihale usulü nedir?", "madde": 19},
+  {"soru": "Belli istekliler arasında ihale usulünde kaç istekliden az teklif verilirse ihale iptal edilir?", "madde": 20},
+  {"soru": "Pazarlık usulü hangi hallerde uygulanabilir?", "madde": 21},
+  {"soru": "Doğrudan temin hangi durumlarda yapılabilir?", "madde": 22},
+  {"soru": "Tasarım yarışmaları hangi projeler için düzenlenebilir?", "madde": 23},
+  {"soru": "Geçici teminat oranı nedir?", "madde": 33},
+  {"soru": "Kesin teminat oranı yüzde kaçtır?", "madde": 43},
+  {"soru": "Teminat olarak hangi değerler kabul edilir?", "madde": 34},
+  {"soru": "Tekliflerin geçerlilik süresi uzatılabilir mi?", "madde": 32},
+  {"soru": "Aşırı düşük teklifler nasıl değerlendirilir?", "madde": 38},
+  {"soru": "Eşik değerlerin üzerindeki açık ihalelerde ilan ihale tarihinden en az kaç gün önce yapılmalıdır?", "madde": 13},
+  {"soru": "İhaleye kimler katılamaz?", "madde": 11},
+  {"soru": "İdareye şikayet başvurusu kaç gün içinde yapılır?", "madde": 55},
+  {"soru": "Kuruma itirazen şikayet başvurusu kaç gün içinde yapılır?", "madde": 56},
+  {"soru": "İhalelere katılmaktan yasaklama süresi ne kadardır?", "madde": 58},
+  {"soru": "Kamu İhale Kurulu kaç üyeden oluşur?", "madde": 53},
+  {"soru": "Ortak girişimler ihaleye nasıl katılabilir?", "madde": 14},
+  {"soru": "Ankara'nın nüfusu kaç?", "madde": null},
+  {"soru": "Türkiye'de asgari ücret ne kadar?", "madde": null},
+  {"soru": "Python'da liste nasıl oluşturulur?", "madde": null}
+]
