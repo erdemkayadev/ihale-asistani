@@ -1,7 +1,8 @@
 import json                                   # test setini okumak için
 import re                                     # metin içinde kalıp (madde numarası) aramak için
 from pathlib import Path                      # dosya yolu için
-from soru_sor import cevapla                  # soru_sor.py'deki cevaplama fonksiyonunu kullan
+from rag import veritabani_ac, cevapla        # YENİ
+db = veritabani_ac("vektor_db")               # YENİ: kayıtlı veritabanını aç                  # soru_sor.py'deki cevaplama fonksiyonunu kullan
 
 
 def sadelestir(metin):
@@ -21,7 +22,7 @@ test_seti = json.loads(Path("rag_test_seti.json").read_text(encoding="utf-8"))  
 
 dogru = 0
 for i, test in enumerate(test_seti, start=1):         # her soruyu sırayla, 1'den başlayan numarayla gez
-    cevap = cevapla(test["soru"])                      # sistemimize soruyu sor
+    cevap = cevapla(db, test["soru"])                      # sistemimize soruyu sor
     if test["madde"] is None:                          # belgede OLMAYAN soru: "bulamadım" demeli
         basarili = "bulamadım" in sadelestir(cevap)
         beklenen = "Belgede bulamadım"
