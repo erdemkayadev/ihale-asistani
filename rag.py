@@ -194,6 +194,28 @@ def gercek_etiket(alinti, belge):
 YETERLIK = re.compile(r"katılabilmek için gereken|yeterlik kriter|yeterlik şart|istenen belge")
 BENT = re.compile(r"^([a-zçğıöşü]{1,2})\s*\)\s*(.+)")             # "a) Vergi borcu yoktur belgesi", "ğ) ..."
 ALT_MADDE = re.compile(r"^(\d{1,2}(?:\.\d{1,2})+)\.?(?=\s|[^\W\d_])\s*(.+)")   # "7.1.İsteklilerin", "7.5.3. İş..."; "11.06.2011" değil
+ALFABE = "abcçdefgğhıijklmnoöprsştuüvyz"                              # bent harflerinin sırası
+
+
+def _yapisik_bentleri_ayir(maddeler):
+    """PDF'te bir sonraki bent aynı satıra yapışık gelebilir: 'h) Bu madde boş bırakılmıştır. ı) İstekliler...'.
+    Sadece sıradaki harf (h'den sonra ı) cümle sonundan sonra geliyorsa yeni bent sayılır; '(a) ve (b) bentleri' bölünmez."""
+    sonuc = []
+    for x in maddeler:
+        sonuc.append(x)
+        while True:
+            son = sonuc[-1]
+            m = re.match(r"^(.*?)([a-zçğıöşü])\)$", son["bent"])     # "7.5.1 b)" -> ("7.5.1 ", "b")
+            if not m or m.group(2) not in ALFABE[:-1]:
+                break
+            sonraki = ALFABE[ALFABE.index(m.group(2)) + 1]
+            k = re.search(r"(?<=[.;:,])\s+" + sonraki + r"\)\s+(?=[A-ZÇĞİÖŞÜ\"“])", son["metin"])
+            if not k:
+                break
+            yeni = {"bent": f"{m.group(1)}{sonraki})", "metin": son["metin"][k.end():]}
+            son["metin"] = son["metin"][:k.start()]
+            sonuc.append(yeni)
+    return sonuc
 
 
 def istenen_belgeler(bolumler):
@@ -220,6 +242,7 @@ def istenen_belgeler(bolumler):
             maddeler.append(simdiki)
         elif simdiki:
             simdiki["metin"] += " " + s_                            # önceki bendin devam satırı
+    maddeler = _yapisik_bentleri_ayir(maddeler)
     for x in maddeler:
         x["metin"] = re.sub(r"\s+", " ", x["metin"]).strip()          # tam metin: "listede var mı" kontrolü bununla
         x["kisa"] = x["metin"][:300] + ("..." if len(x["metin"]) > 300 else "")   # ekranda ve modelde gösterilen
@@ -511,6 +534,7 @@ KART_KELIMELERI = {                                                 # alıntıda
     "odeme": ["ödeme", "hakediş", "avans"],
     "deneyim_sarti": ["aktif olarak", "referans", "deneyim", "tecrübe"],
 }
+KART_YASAK = {"is_suresi": ["geçerlilik"]}                          # alıntıda/madde başlığında bunlar geçerse alan yanlıştır
 
 
 def _alan_uyuyor_mu(anahtar, deger, alinti, belge):
@@ -522,6 +546,8 @@ def _alan_uyuyor_mu(anahtar, deger, alinti, belge):
     if anahtar == "is_deneyimi" and _kucuk(deger or "").startswith("istenm"):
         return True                                                 # "İstenmiyor": alıntı listenin başı olabilir
     metin = _duz(alinti) + _duz(gercek_etiket(alinti, belge) or "")
+    if any(f" {_duz(k).strip()}" in metin for k in KART_YASAK.get(anahtar, [])):
+        return False                                                # "Madde 24 - Tekliflerin geçerlilik süresi" işin süresi değildir
     return any(f" {_duz(k).strip()}" in metin for k in kelimeler)
 
 
@@ -655,16 +681,34 @@ def sartname_cevapla(belge, soru):
     if sonuc["bulundu"] and not gecerli:                            # kaynağı doğrulanamayan "buldum" cevabı kabul edilmez
         sonuc["bulundu"] = False
         sonuc["cevap"] = "Bu soruya belgeden doğrulanabilir bir alıntıyla cevap bulunamadı."
-    sonuc_ = {"bulundu": sonuc["bulundu"], "cevap": sonuc["cevap"], "kaynaklar": gecerli, "okunan": okunan,
+    sonuc_ = {"bulundu": sonuc["bulundu"], "cevap": sonuc["cevap"], "kaynaklar": gecerli,
+              "okunan": None if sonuc["bulundu"] else okunan,        # "belgenin tamamı okundu" sadece bulunamadıysa gerekir
               "dogrulanamayan_alinti_sayisi": len(gecersiz)}
     if istenen and LISTE_SORUSU.search(_kucuk(soru)):              # "hangi belgeler": listeyi kod verir, ekranda tablo olur
         sonuc_["istenen_belgeler"] = [{"bent": x["bent"], "kisa": x["kisa"]} for x in istenen["maddeler"]]
         sonuc_["liste_notu"] = ("Asistana not, kullanıcıya yazma: bu listenin tamamı kullanıcıya ekranda tablo olarak "
                                 "gösteriliyor. Listeyi tekrar yazma, tablodan ya da programdan bahsetme; kaç bent olduğunu "
                                 "ve öne çıkan 2-3 yeterlik şartını söyle.")
-        madde7 = istenen["etiket"].split(",")[0]                    # tabloda zaten var: aynı maddenin alıntıları gizlenir
-        sonuc_["kaynaklar"] = [k for k in gecerli if not k["etiket"].startswith(madde7)]
+        sonuc_["kaynaklar"] = []                                    # liste sorusunda kanıt tablonun kendisi; başka alıntı gösterilmez
     return sonuc_
+
+
+def liste_ozeti(belge):
+    """'Hangi belgeler isteniyor' sorusunun cevabı, modelsiz: tablo zaten ekranda; burada sadece sayısı, iş deneyimi
+    kararı ve diğer deneyim şartı yazılır. Küçük model bu soruda listeyi tekrar edip alakasız bilgi eklediği için."""
+    istenen = belge["istenen"]
+    madde = istenen["etiket"].split(",")[0]
+    durum, bentler = is_deneyim_durumu(istenen)
+    satirlar = [f"İhaleye katılım için istenen belgeler ve yeterlik kriterleri aşağıdaki tabloda ({madde})."]
+    if durum == "isteniyor":
+        satirlar.append("**İş deneyim belgesi isteniyor:** " + "; ".join(f"{x['bent']} “{x['kisa']}”" for x in bentler[:2]))
+    else:
+        satirlar.append("**İş deneyim belgesi istenmiyor**" + (f" ({bentler[0]['bent']}: “{bentler[0]['kisa']}”)" if bentler else
+                                                              " (istenen belgeler arasında yer almıyor)."))
+    for x in deneyim_sartlari(istenen):
+        satirlar.append(f"**Diğer deneyim şartı:** {x['bent']} “{x['kisa']}”")
+    satirlar.append("Teklif hazırlamadan önce tablodaki her bendi şartnamenin aslından kontrol edin.")
+    return "\n\n".join(satirlar)
 
 
 # ---------- eski arayüz (belge_yukle.py gibi eski dosyalar bozulmasın) ----------

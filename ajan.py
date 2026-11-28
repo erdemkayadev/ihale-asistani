@@ -65,11 +65,14 @@ Belgeden doğrulanmış ihale kartı (sorudan önce bilinenler):
 - sartname_sor'un "kaynaklar"ındaki alıntılar ve "istenen_belgeler" listesi kullanıcıya program tarafından ayrıca
   gösterilir; tekrar yazma, "listeleyeyim mi" diye sorma. Listenin varlığını ve öne çıkan 2-3 şartı söylemen yeterli.
   Kısa cevabı yaz ve dayandığı madde etiketini söyle (örn. "Madde 7'ye göre iş deneyim belgesi istenmiyor.").
-- "istenen_belgeler" geldiyse listeyi madde madde tekrar yazma, tablodan ya da programdan bahsetme; kaç bent olduğunu
-  ve öne çıkan 2-3 yeterlik şartını tek paragrafta söyle.
+- "istenen_belgeler" geldiyse belgeleri tek tek sayma, tablodan ya da programdan bahsetme. En fazla 3 cümle yaz: iş deneyim
+  belgesinin durumu (karttaki gibi) ve öne çıkan 1-2 yeterlik şartı (ör. bilanço oranları, kapasite raporu, işletme
+  kayıt belgesi).
+- Karttaki bilgileri (süre, teminat vb.) sadece soru onlarla ilgiliyse kullan; ilgisiz bilgi ekleme.
 - Belgedeki bir şartı aktarırken kelimelerini koru; zamanını, kipini, sayısını değiştirme ("aktif olarak hizmet
   vermesi" ile "hizmet vermiş olması" farklı şartlardır). Emin değilsen şartı tırnak içinde aynen yaz.
 - "bulundu" false ise: "Belgede bu konuda bir hüküm bulamadım" de ve "okunan" bilgisini aktar ("belgenin tamamı okundu").
+  "bulundu" true ise "okunan" bilgisinden hiç bahsetme.
   Kendi bilginden ihale mevzuatı yorumu ekleme.
 - Kullanıcı "çıkar", "devam", "detay ver" gibi kısa bir takip yazarsa önceki konuyu genişleterek sartname_sor'a
   AÇIK bir soru gönder (örn. "İş deneyimi ve benzer iş tanımıyla ilgili tüm hükümler neler?").
@@ -231,12 +234,16 @@ def dogrulanmayan_sayilar(cevap, kaynaklar):
 
 # ---------- ana fonksiyon ----------
 
-TEKLIF = re.compile(r"\n\s*\n\s*(?:\*\*)?(?:İstersen|İsterseniz|Dilersen|Dilerseniz)\b[^\n]*\s*$")
+TEKLIF = re.compile(r"\b(İstersen|İsterseniz|Dilersen|Dilerseniz|ister misin|ister misiniz)\b")
 
 
 def teklifi_sil(cevap):
-    """Cevabın sonundaki 'İstersen ... yazayım mı?' paragrafını siler (talimata rağmen model eklerse)."""
-    return TEKLIF.sub("", (cevap or "").rstrip())
+    """Cevabın sonundaki 'İstersen ... yazayım mı?' / 'Not: ... İsterseniz ...' paragraflarını siler
+    (talimata rağmen model eklerse). İlk paragrafa dokunmaz."""
+    parcalar = (cevap or "").rstrip().split("\n\n")
+    while len(parcalar) > 1 and TEKLIF.search(parcalar[-1]):
+        parcalar.pop()
+    return "\n\n".join(parcalar)
 
 
 def sor(soru, gecmis=None, belge=None, model=None):
@@ -286,6 +293,10 @@ def sor(soru, gecmis=None, belge=None, model=None):
         return {"cevap": "Bu soruyu güvenilir şekilde cevaplayamadım. Soruyu daraltarak tekrar dener misiniz?",
                 "araclar": kullanilan, "tablolar": {}, "kaynaklar": [], "dogrulanmayan": []}
 
+    if "sartname_sor" in tablolar and belge is not None:            # "hangi belgeler" sorusu: cevabı kod yazar, tablo altında
+        import rag
+        return {"cevap": rag.liste_ozeti(belge), "araclar": kullanilan, "tablolar": tablolar, "kaynaklar": alintilar,
+                "dogrulanmayan": []}
     cevap = yanit.output_text
     supheli = dogrulanmayan_sayilar(cevap, kaynaklar)
     if supheli:                                                     # bir kez düzelttir; düzeltme notu kullanıcıya görünmez
