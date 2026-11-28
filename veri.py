@@ -1,5 +1,6 @@
 """Veritabanı katmanı: projedeki TÜM SQL bu dosyada.
 İleride SQLite'tan PostgreSQL'e geçerken sadece bu dosya değişecek."""
+import re                                                           # arama metnindeki noktalamayı temizlemek için
 import sqlite3                                                      # şimdilik SQLite: tek dosya, kurulum yok
 
 DB_YOLU = "ihaleler.db"
@@ -78,11 +79,30 @@ def _sutunlari_tamamla(db):
                 db.execute(f"ALTER TABLE {tablo} ADD COLUMN {ad} {tip}")  # eski kayıtlarda bu sütun boş (NULL) kalır
 
 
+def tr_kucuk(metin):
+    """Türkçe küçük harf: 'PERDE' -> 'perde', 'İZMİR' -> 'izmir', 'ISPARTA' -> 'ısparta'.
+    SQLite'ın lower() fonksiyonu Türkçe İ/I harflerini bilmez, bu yüzden kendimiz yazıyoruz."""
+    if metin is None:
+        return None
+    return metin.replace("I", "ı").replace("İ", "i").lower()
+
+
+def arama_metni(metin):
+    """Kelime başına göre arama için: '(Stor) Perde-Alımı' -> ' stor perde alımı'.
+    Noktalama boşluğa döner, başa boşluk eklenir; böylece LIKE '% tül%' sadece 'tül' ile BAŞLAYAN kelimeyi bulur
+    ('görüntüleme' içindeki 'tül'ü değil)."""
+    if metin is None:
+        return None
+    return " " + re.sub(r"[^0-9a-zçğıöşüâîû]+", " ", tr_kucuk(metin))
+
+
 def baglan():
     """Veritabanına bağlanır; tablolar yoksa kurar, eksik sütunları ekler."""
     db = sqlite3.connect(DB_YOLU)
     db.executescript(SEMA)
     _sutunlari_tamamla(db)
+    db.create_function("tr_kucuk", 1, tr_kucuk, deterministic=True)   # SQL içinde tr_kucuk(konu) diye kullanılabilsin
+    db.create_function("arama_metni", 1, arama_metni, deterministic=True)   # kelime başına göre konu araması
     return db
 
 
