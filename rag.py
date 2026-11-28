@@ -550,6 +550,8 @@ def ihale_karti(belge):
         a = ham.get(anahtar) or {}
         if not a.get("deger") or not _duz(a["deger"]).strip():      # boş ya da "------" gibi harfsiz değer
             durum = "bulunamadi"
+        elif anahtar == "ikn" and not re.search(r"\d{4}\s*/\s*\d{3,}", a["deger"]):
+            durum = "bulunamadi"                                    # "2023/" gibi yarım İKN: belgede numara yazılmamış
         elif alinti_belgede_mi(a.get("alinti"), belge) and _alan_uyuyor_mu(anahtar, a.get("deger"), a.get("alinti"), belge):
             durum = "dogrulandi"
         else:
@@ -647,6 +649,9 @@ def sartname_cevapla(belge, soru):
             if x in diger and _duz(x["metin"][:40]).strip() not in _duz(sonuc["cevap"]):
                 sonuc["cevap"] += f" Ayrıca listede deneyim türü bir şart var: {x['bent']} {x['kisa']}"
             sonuc["bulundu"] = True
+    if istenen and len(gecerli) > 1:                                # listenin giriş cümlesi ("aşağıda sayılan belgeleri...") hiçbir şeyi kanıtlamaz
+        giris = _duz(istenen["maddeler"][0]["metin"]).strip()
+        gecerli = [k for k in gecerli if not (giris in _duz(k["alinti"]) and len(_duz(k["alinti"])) <= len(giris) + 12)]
     if sonuc["bulundu"] and not gecerli:                            # kaynağı doğrulanamayan "buldum" cevabı kabul edilmez
         sonuc["bulundu"] = False
         sonuc["cevap"] = "Bu soruya belgeden doğrulanabilir bir alıntıyla cevap bulunamadı."
@@ -654,7 +659,9 @@ def sartname_cevapla(belge, soru):
               "dogrulanamayan_alinti_sayisi": len(gecersiz)}
     if istenen and LISTE_SORUSU.search(_kucuk(soru)):              # "hangi belgeler": listeyi kod verir, ekranda tablo olur
         sonuc_["istenen_belgeler"] = [{"bent": x["bent"], "kisa": x["kisa"]} for x in istenen["maddeler"]]
-        sonuc_["liste_notu"] = f"İstenen belgelerin tam listesi ({istenen['etiket']}) kullanıcıya tablo olarak gösteriliyor."
+        sonuc_["liste_notu"] = ("Asistana not, kullanıcıya yazma: bu listenin tamamı kullanıcıya ekranda tablo olarak "
+                                "gösteriliyor. Listeyi tekrar yazma, tablodan ya da programdan bahsetme; kaç bent olduğunu "
+                                "ve öne çıkan 2-3 yeterlik şartını söyle.")
         madde7 = istenen["etiket"].split(",")[0]                    # tabloda zaten var: aynı maddenin alıntıları gizlenir
         sonuc_["kaynaklar"] = [k for k in gecerli if not k["etiket"].startswith(madde7)]
     return sonuc_

@@ -53,7 +53,8 @@ CEVAP BİÇİMİ (kullanıcı bunu okuyacak):
     olarak gösterilir. Satırları tekrar yazma; 2-3 cümle özet yaz. "eslesen_ihale" ihale sayısı, "eslesen_sozlesme"
     sözleşme sayısıdır; karıştırma.
 14. Hukuki tavsiye verme. Önemli kararlardan önce EKAP'tan ve ihale dokümanından doğrulanmasını hatırlat (tek cümle).
-15. Kısa yaz. Kalın yazıyı en fazla 2-3 yerde kullan. Sonunda en fazla bir öneri sorusu sor."""
+15. Kısa yaz. Kalın yazıyı en fazla 2-3 yerde kullan. Cevabı "İstersen ... yapayım mı?" gibi bir teklif ya da soruyla
+    bitirme; kullanıcı ne isterse kendisi sorar."""
 
 BELGE_VAR = """ŞARTNAME: Kullanıcı "{ad}" adlı belgeyi yükledi. "Bu ihalede", "şartnamede", "belgede", "iş deneyimi",
 "teminat", "süre", "yeterlik", "ceza", "ödeme" gibi sorular bu belgeyle ilgilidir: sartname_sor aracını kullan, İKN isteme.
@@ -64,6 +65,10 @@ Belgeden doğrulanmış ihale kartı (sorudan önce bilinenler):
 - sartname_sor'un "kaynaklar"ındaki alıntılar ve "istenen_belgeler" listesi kullanıcıya program tarafından ayrıca
   gösterilir; tekrar yazma, "listeleyeyim mi" diye sorma. Listenin varlığını ve öne çıkan 2-3 şartı söylemen yeterli.
   Kısa cevabı yaz ve dayandığı madde etiketini söyle (örn. "Madde 7'ye göre iş deneyim belgesi istenmiyor.").
+- "istenen_belgeler" geldiyse listeyi madde madde tekrar yazma, tablodan ya da programdan bahsetme; kaç bent olduğunu
+  ve öne çıkan 2-3 yeterlik şartını tek paragrafta söyle.
+- Belgedeki bir şartı aktarırken kelimelerini koru; zamanını, kipini, sayısını değiştirme ("aktif olarak hizmet
+  vermesi" ile "hizmet vermiş olması" farklı şartlardır). Emin değilsen şartı tırnak içinde aynen yaz.
 - "bulundu" false ise: "Belgede bu konuda bir hüküm bulamadım" de ve "okunan" bilgisini aktar ("belgenin tamamı okundu").
   Kendi bilginden ihale mevzuatı yorumu ekleme.
 - Kullanıcı "çıkar", "devam", "detay ver" gibi kısa bir takip yazarsa önceki konuyu genişleterek sartname_sor'a
@@ -226,6 +231,14 @@ def dogrulanmayan_sayilar(cevap, kaynaklar):
 
 # ---------- ana fonksiyon ----------
 
+TEKLIF = re.compile(r"\n\s*\n\s*(?:\*\*)?(?:İstersen|İsterseniz|Dilersen|Dilerseniz)\b[^\n]*\s*$")
+
+
+def teklifi_sil(cevap):
+    """Cevabın sonundaki 'İstersen ... yazayım mı?' paragrafını siler (talimata rağmen model eklerse)."""
+    return TEKLIF.sub("", (cevap or "").rstrip())
+
+
 def sor(soru, gecmis=None, belge=None, model=None):
     """Soruyu cevaplar. gecmis: [{"role": "user"/"assistant", "content": "..."}]. belge: rag.belge_hazirla() sonucu.
     Döner: {"cevap", "araclar": [(ad, parametreler)], "tablolar": {araç: satırlar},
@@ -287,6 +300,7 @@ def sor(soru, gecmis=None, belge=None, model=None):
         supheli = dogrulanmayan_sayilar(cevap, kaynaklar)
     if supheli:                                                     # hâlâ varsa kullanıcıya açıkça söyle
         cevap += f"\n\n> ⚠️ Şu sayılar veriden doğrulanamadı, dikkate almayın: {', '.join(supheli)}"
+    cevap = teklifi_sil(cevap)                                      # "İstersen ... yapayım mı?" kapanışını at
     return {"cevap": cevap, "araclar": kullanilan, "tablolar": tablolar, "kaynaklar": alintilar, "dogrulanmayan": supheli}
 
 
