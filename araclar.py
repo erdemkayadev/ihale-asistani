@@ -126,7 +126,7 @@ def _donem(baslangic, bitis):
     k = kapsam()
     bas, son = (baslangic or "0000-00")[:7], (bitis or "9999-99")[:7]
     aylar = [ay for ay in k["tam_aylar"] if bas <= ay <= son]
-    eksik = [ay for ay in k["eksik_aylar"] if bas <= ay <= son]
+    eksik = [ay for ay in k["eksik_aylar"] if aylar and aylar[0] <= ay <= aylar[-1]]   # dönemin içindeki boşluklar
     uyari = [f"Şu aylar eksik okunduğu için hesaba katılmadı: {_araliklar(eksik)}."] if eksik else []
     return aylar, uyari
 
@@ -222,8 +222,9 @@ def sonuc_listesi(tur=None, usul=None, il=None, konu=None, haric=None, idare=Non
         kosul.append("bulten_tarihi >= ?"); param.append(baslangic)
     if bitis:
         kosul.append("bulten_tarihi <= ?"); param.append(bitis)
-    toplam = veri.sorgu(f"SELECT COUNT(*) FROM sonuclar WHERE ilan_turu = '{ASIL_SONUC}'"
-                        + "".join(f" AND {k}" for k in kosul), param)[0][0]
+    ikn_listesi = [r[0] for r in veri.sorgu(f"SELECT ikn FROM sonuclar WHERE ilan_turu = '{ASIL_SONUC}'"
+                                             + "".join(f" AND {k}" for k in kosul), param)]
+    toplam, ihale = len(ikn_listesi), len({_ihale_kodu(i) for i in ikn_listesi})
     kayitlar = _sonuclari_getir(kosul, param, sinir=LISTE_SINIRI)
     liste = []
     for r in kayitlar:
@@ -236,7 +237,8 @@ def sonuc_listesi(tur=None, usul=None, il=None, konu=None, haric=None, idare=Non
                       "oran_yuzde": round(100 * oran, 1) if oran else None,
                       "oran_yok_nedeni": neden})
     uyarilar = notlar + (["Bazı aylar eksik okundu; liste tam olmayabilir."] if kapsam()["eksik_aylar"] else [])
-    return {"toplam_eslesen": toplam, "gosterilen": len(liste), "sonuclar": liste, "uyarilar": uyarilar}
+    return {"eslesen_sozlesme": toplam, "eslesen_ihale": ihale, "gosterilen": len(liste), "sonuclar": liste,
+            "uyarilar": uyarilar}
 
 
 def acik_ihaleler(tur=None, usul=None, il=None, konu=None, haric=None, idare=None):
@@ -263,3 +265,37 @@ def acik_ihaleler(tur=None, usul=None, il=None, konu=None, haric=None, idare=Non
             tekil[ikn]["uyari"] = "İPTAL EDİLMİŞ" if "İPTAL" in tur_adi else "Düzeltme ilanı var, EKAP'tan kontrol et"
     return {"toplam_eslesen": len(tekil), "gosterilen": len(ilanlar), "ilanlar": ilanlar,
             "son_bulten": kapsam()["son_bulten"], "uyarilar": notlar}
+
+
+def firma_siralamasi(tur=None, usul=None, il=None, konu=None, haric=None, idare=None, baslangic=None, bitis=None):
+    """En çok ihale kazanan firmalar (ilk 10). Sadece tam okunmuş aylar sayılır."""
+    kosul, param, hata, notlar = _filtre("sonuclar", tur, usul, il, konu, idare, haric=haric)
+    if hata:
+        return {"hata": hata}
+    aylar, uyarilar = _donem(baslangic, bitis)
+    if not aylar:
+        return {"veri_yok": "İstenen dönemde tam okunmuş ay yok.", "kapsam": kapsam()["ozet"]}
+    kayitlar = [r for r in _sonuclari_getir(kosul, param, aylar) if r["yuklenici"]]
+    if not kayitlar:
+        return {"veri_yok": "Bu filtrelere uyan sonuçlanmış ihale bulunamadı.", "donem": _araliklar(aylar)}
+    firmalar = {}
+    for r in kayitlar:                                              # büyük/küçük harf ve noktalama farkını birleştir
+        anahtar = veri.arama_metni(r["yuklenici"]).strip()
+        f = firmalar.setdefault(anahtar, {"adlar": {}, "ihaleler": set(), "sozlesme": 0, "bedel": 0.0, "ornek": []})
+        f["adlar"][r["yuklenici"]] = f["adlar"].get(r["yuklenici"], 0) + 1
+        f["ihaleler"].add(_ihale_kodu(r["ikn"]))
+        f["sozlesme"] += 1
+        if r["sozlesme_bedeli"] and (r["para_birimi"] or "TRY") == "TRY":
+            f["bedel"] += r["sozlesme_bedeli"]
+        if len(f["ornek"]) < 3:
+            f["ornek"].append(r["ikn"])
+    sirali = sorted(firmalar.values(), key=lambda f: (-len(f["ihaleler"]), -f["bedel"]))[:10]
+    liste = [{"sira": i + 1, "yuklenici": max(f["adlar"], key=f["adlar"].get), "ihale_sayisi": len(f["ihaleler"]),
+              "sozlesme_sayisi": f["sozlesme"], "toplam_bedel_try": round(f["bedel"], 2),
+              "ornek_ikn": ", ".join(f["ornek"])} for i, f in enumerate(sirali)]
+    uyarilar = notlar + uyarilar + ["Firma adları sadece büyük/küçük harf ve noktalama farkına göre birleştirildi; "
+                                    "aynı firma farklı yazılmışsa ayrı satırlarda görünebilir.",
+                                    "Toplam bedele sadece TL sözleşmeler dahil."]
+    return {"donem": _araliklar(aylar), "sozlesme_sayisi": len(kayitlar),
+            "ihale_sayisi": len({_ihale_kodu(r["ikn"]) for r in kayitlar}), "firma_sayisi": len(firmalar),
+            "firmalar": liste, "uyarilar": uyarilar}

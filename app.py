@@ -5,27 +5,35 @@ import os                                           # şifreyi okumak ve geçici
 import tempfile                                     # yüklenen belgeyi geçici olarak diske yazmak için
 import streamlit as st                              # web arayüzü
 from pypdf import PdfReader                         # sayfa sayısını kontrol etmek için
-from rag import belge_parcala, veritabani_kur       # şartname okuma ve vektör veritabanı
+import rag                                          # şartname okuma, ihale kartı, alıntılı cevap
 import ajan                                         # soruyu cevaplayan ajan (veritabanı + şartname araçları)
 
-MAKS_MB = 10                                        # en fazla 10 MB dosya
+MAKS_MB = 10                                        # en fazla 10 MB dosya (config.toml'daki maxUploadSize ile aynı)
 MAKS_SAYFA = 150                                    # en fazla 150 sayfa
 MAKS_SORU = 30                                      # bir oturumda en fazla 30 soru
 GECMIS_MESAJ = 6                                    # modele gönderilecek son mesaj sayısı (maliyeti sınırlar)
 
 st.set_page_config(page_title="İhale Asistanı", page_icon="📄")
-st.title("İhale Asistanı")
+st.title("İhale Asistanı", anchor=False)                         # anchor=False: başlığın yanındaki bağlantı simgesi çıkmasın
 st.caption("Kamu ihale bültenlerinden emsal, rekabet ve açık ihale bilgisi; yüklediğiniz şartnameden madde kaynaklı cevap. "
            "Cevaplar karar desteğidir, EKAP'tan doğrulayın. Yüklenen belgeler OpenAI'a gönderilir; gizli belge yüklemeyin.")
 
+# ---------- şifre: doğru girilince kutu kaybolur ----------
 SIFRE = os.getenv("APP_SIFRE")                                   # şifre .env'de ya da sunucu ayarlarında
-if SIFRE and st.text_input("Şifre", type="password") != SIFRE:   # şifre tanımlıysa ve yanlış girildiyse
-    st.info("Uygulamayı denemek için şifreyi girin.")
-    st.stop()                                                    # sayfanın geri kalanını çalıştırma
+if SIFRE and not st.session_state.get("giris"):                  # şifre tanımlı ve bu oturumda henüz giriş yapılmadıysa
+    girilen = st.text_input("Şifre", type="password")
+    if girilen != SIFRE:
+        if girilen:
+            st.error("Şifre yanlış.")
+        else:
+            st.info("Uygulamayı denemek için şifreyi girin.")
+        st.stop()                                                # sayfanın geri kalanını çalıştırma
+    st.session_state.giris = True                                # bu oturumda bir daha sorma
+    st.rerun()                                                   # şifre kutusu ekrandan kalksın
 
-st.session_state.setdefault("mesajlar", [])                      # sohbet geçmişi: [{"rol", "metin", "araclar"}]
+st.session_state.setdefault("mesajlar", [])                      # sohbet geçmişi: [{"rol", "metin", "araclar", "tablolar", "kaynaklar"}]
 st.session_state.setdefault("soru_sayisi", 0)                    # bu oturumda sorulan soru sayısı
-st.session_state.setdefault("db", None)                          # yüklenen şartnamenin vektör veritabanı
+st.session_state.setdefault("belge", None)                       # yüklenen şartname: metin, maddeler, ihale kartı
 
 # ---------- yan menü: isteğe bağlı şartname ----------
 with st.sidebar:
@@ -49,58 +57,102 @@ with st.sidebar:
             if hata:
                 st.error(hata)
             else:
-                with st.spinner("Belge okunuyor..."):
+                with st.spinner("Belge okunuyor, ihale kartı çıkarılıyor... (yarım dakika sürebilir)"):
                     with tempfile.NamedTemporaryFile(delete=False, suffix=uzanti) as f:
                         f.write(icerik)                          # dosyayı geçici olarak diske yaz
                     try:
-                        parcalar = belge_parcala(f.name)         # maddelere göre parçala
+                        belge = rag.belge_hazirla(f.name, yuklenen.name)   # maddelere ayır
                     except Exception:
-                        parcalar = None
+                        belge = None
                     finally:
                         os.remove(f.name)                        # geçici dosyayı her durumda sil
-                if not parcalar:                                 # bozuk ya da taranmış (metinsiz) belge
-                    st.error("Belgede okunabilir metin bulunamadı.")
+                    if belge is not None:
+                        try:
+                            rag.ihale_karti(belge)               # künye ve kritik şartlar, alıntıları doğrulanmış
+                        except Exception:
+                            belge["kart"] = None                 # kart çıkmazsa da sorular çalışsın
+                if belge is None:                                # bozuk ya da taranmış (metinsiz) belge
+                    st.error("Belgede okunabilir metin bulunamadı. Taranmış (resim) PDF olabilir.")
                 else:
-                    st.session_state.db = veritabani_kur(parcalar, ad=f"b{kimlik}")   # hafızada veritabanı kur
+                    st.session_state.belge = belge
                     st.session_state.kimlik = kimlik
-                    st.session_state.belge_adi = yuklenen.name
-    if st.session_state.db is not None:
-        st.success(f"Yüklü: {st.session_state.get('belge_adi', 'belge')}")
+    if not yuklenen and st.session_state.belge is not None:     # kullanıcı dosyayı kaldırdıysa belgeyi de unut
+        st.session_state.belge, st.session_state.kimlik = None, None
+    belge = st.session_state.belge
+    if belge is not None:
+        st.success(f"Yüklü: {belge['ad']}")
+        if belge.get("kart"):
+            st.subheader("İhale kartı")
+            eksik = []
+            for k in belge["kart"].values():
+                if k["durum"] == "dogrulandi":
+                    st.markdown(f"**{k['ad']}:** {k['deger']}")
+                    st.caption(k["etiket"])                      # bilginin geldiği madde: kullanıcı kontrol edebilsin
+                else:
+                    eksik.append(k["ad"])
+            if eksik:
+                st.caption("Belgede bulunamadı: " + ", ".join(eksik))
+        if belge.get("istenen"):                                 # katılım için istenen belgeler: kodla çıkarıldı, modelsiz
+            with st.expander(f"İstenen belgeler ({len(belge['istenen']['maddeler'])})"):
+                st.caption(belge["istenen"]["etiket"])
+                for x in belge["istenen"]["maddeler"]:
+                    st.markdown(f"**{x['bent']}** {x['kisa']}")
+        if not belge.get("kart"):
+            st.caption("İhale kartı çıkarılamadı; sorularınızı yine de sorabilirsiniz.")
 
 # ---------- sohbet ----------
-for m in st.session_state.mesajlar:                              # önceki mesajları ekrana bas
+GELISTIRICI = os.getenv("GELISTIRICI") == "1"                    # .env'de GELISTIRICI=1 ise araç ayrıntıları görünür
+ORNEKLER = [                                                     # karşılama ekranındaki hazır sorular (kısa: düğmeye sığsın)
+    "Ankara'da temizlik ihaleleri kaça gidiyor?",
+    "Perde ihalelerini en çok kim kazanıyor?",
+    "Teklif tarihi geçmemiş yemek ihaleleri",
+    "Pazarlıkla mal alımına kaç teklif geliyor?",
+]
+
+
+def mesaji_goster(m):
+    """Bir sohbet mesajını; varsa tablosu, şartname alıntıları ve (geliştirici modunda) araç ayrıntısıyla basar."""
     with st.chat_message(m["rol"]):
         st.markdown(m["metin"])
-        for ad, satirlar in m.get("tablolar", {}).items():         # listeyi program basar, model değil
+        for ad, satirlar in m.get("tablolar", {}).items():       # listeyi program basar, model değil
             st.dataframe(satirlar, hide_index=True)
-        if m.get("araclar"):
+        for k in m.get("kaynaklar", []):                         # şartname alıntıları: belgeden birebir, kod doğruladı
+            st.markdown(f"📄 **{k['etiket']}**\n> {k['alinti']}")
+        if GELISTIRICI and m.get("araclar"):
             with st.expander("Kullanılan araçlar"):
                 st.code("\n".join(f"{ad} {json.dumps(p, ensure_ascii=False)}" for ad, p in m["araclar"]))
 
-soru = st.chat_input("Örn: Ankara'da temizlik hizmeti ihaleleri yaklaşık maliyetin yüzde kaçına gidiyor?")
+
+if not st.session_state.mesajlar:                                # ilk açılış: ne sorulabileceğini göster
+    st.markdown("**Neler sorabilirsiniz?** Geçmiş ihalelerin hangi oranlara gittiğini, kimin kazandığını, "
+                "açık ihaleleri; yüklediğiniz şartnamenin maddelerini.")
+    sutunlar = st.columns(2)
+    for i, ornek in enumerate(ORNEKLER):
+        if sutunlar[i % 2].button(ornek):
+            st.session_state.bekleyen = ornek                    # tıklanan soruyu bir sonraki adımda gönder
+            st.rerun()
+
+for m in st.session_state.mesajlar:                              # önceki mesajları ekrana bas
+    mesaji_goster(m)
+
+soru = st.chat_input("İhalelerle ilgili sorunuzu yazın") or st.session_state.pop("bekleyen", None)
 if soru:
     if st.session_state.soru_sayisi >= MAKS_SORU:                # oturum başına soru sınırı
         st.warning(f"Bu oturumda en fazla {MAKS_SORU} soru sorulabilir.")
         st.stop()
     st.session_state.soru_sayisi += 1
     soru = soru[:500]                                            # çok uzun soruları kes
-    gecmis = [{"role": m["rol"], "content": m["metin"] + "".join(f"\n[{ad} tablosu gösterildi: {len(t)} satır]"
-                                                                  for ad, t in m.get("tablolar", {}).items())}
+    gecmis = [{"role": m["rol"], "content": m["metin"] + m.get("not", "")}       # not: gösterilen tablo/alıntı özeti
               for m in st.session_state.mesajlar[-GECMIS_MESAJ:]]
     st.session_state.mesajlar.append({"rol": "user", "metin": soru})
-    with st.chat_message("user"):
-        st.markdown(soru)
-    with st.chat_message("assistant"):
-        with st.spinner("Veriye bakılıyor..."):
-            try:
-                sonuc = ajan.sor(soru, gecmis, st.session_state.db)
-            except Exception:                                    # API hatası, limit dolması vb.
-                sonuc = {"cevap": "Şu an cevap üretilemiyor. Lütfen daha sonra tekrar deneyin.", "araclar": [], "tablolar": {}}
-        st.markdown(sonuc["cevap"])
-        for ad, satirlar in sonuc["tablolar"].items():               # İKN, kazanan, bedel: veritabanından birebir
-            st.dataframe(satirlar, hide_index=True)
-        if sonuc["araclar"]:
-            with st.expander("Kullanılan araçlar"):
-                st.code("\n".join(f"{ad} {json.dumps(p, ensure_ascii=False)}" for ad, p in sonuc["araclar"]))
+    mesaji_goster(st.session_state.mesajlar[-1])
+    with st.spinner("Veriye bakılıyor..."):
+        try:
+            sonuc = ajan.sor(soru, gecmis, st.session_state.belge)
+        except Exception:                                        # API hatası, limit dolması vb.
+            sonuc = {"cevap": "Şu an cevap üretilemiyor. Lütfen biraz sonra tekrar deneyin.", "araclar": [],
+                     "tablolar": {}, "kaynaklar": []}
     st.session_state.mesajlar.append({"rol": "assistant", "metin": sonuc["cevap"], "araclar": sonuc["araclar"],
-                                      "tablolar": sonuc["tablolar"]})
+                                      "tablolar": sonuc["tablolar"], "kaynaklar": sonuc["kaynaklar"],
+                                      "not": ajan.gecmis_notu(sonuc)})
+    st.rerun()                                                   # karşılama ekranı kalksın, sohbet düzgün çizilsin

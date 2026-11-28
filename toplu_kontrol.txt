@@ -1,0 +1,88 @@
+====================================================================================================
+s01_tobb_su_aritma.docx: 45,083 karakter, 48 bölüm (47 madde), tamamı modele gider
+  İstenen belgeler: Madde 7 - İhaleye katılabilmek için gereken belgeler ve yeterlik ölçütleri
+  Bentler: 7.1, a), c), d), e), f), g), ğ), h), ı), 7.2, 7.2.1, 7.3, 7.4, 7.4.1, 7.4.2, 7.4.3, 7.5, 7.5.1, 7.5.1, 7.5.2, 7.5.2 a), 7.5.2 b), 7.5.2 c), 7.5.3.1, 7.5.3.2, 7.5.3.3, 7.5.3.4, 7.5.3.5.1, 7.5.3.5.2, 7.6, 7.6.1, 7.7, 7.7.1, 7.7.2, 7.7.3, 7.7.4, 7.7.4.1, 7.7.4.2, 7.7.4.3, 7.7.4.4, 7.7.4.5, 7.7.4.6, 7.7.4.7, 7.7.4.7.1, 7.7.5, 7.7.5.1, 7.7.5.1.1, 7.7.5.2, 7.7.5.2.1, 7.7.5.2.2, 7.7.5.2.3, 7.7.5.2.4, 7.7.5.2.5, 7.7.6, 7.7.6.1, 7.8, 7.9, 7.9.1
+  İş deneyim belgesi: İSTENİYOR
+     dayanak 7.5.1: İsteklinin ilk ilan veya davet tarihinden geriye doğru son beş yıl içinde kesin kabul işlemleri tamamlanan mal alımlarıyla ilgili yurt içinde veya yurt dışında kamu veya özel sektörde bedel içeren tek bir sözleşme kapsamında gerçekleştirilen ihale konusu iş ve
+     elenen kural h): Tüzel kişi tarafından iş deneyimini göstermek üzere sunulan belgenin, tüzel kişiliğin yarısından fazla hissesine sahip o
+     elenen kural 7.2.1: İş ortaklığının her bir ortağı tarafından 7.1 maddesinin (a) ve (b) bentlerinde yer alan belgelerin ayrı ayrı sunulması 
+  Madde 7 dışında deneyim geçen: Madde 36 - Ekonomik açıdan en avantajlı teklifin belirlenmesi
+====================================================================================================
+s02_iku_guvenlik.pdf: 46,884 karakter, 47 bölüm (46 madde), tamamı modele gider
+  İstenen belgeler: Madde 7 - İhaleye katılabilmek için gereken belgeler ve yeterlik kriterleri, Sayfa 3
+  Bentler: 7.1, a), b), c), d), e), f), g), h), 7.2, 7.2.1, 7.2.2, 7.3, 7.3.1, 7.3.2, 7.3.3, 7.3.4, 7.3.5, 7.3.6, 7.3.7, 7.3.8, 7.4, 7.4.1, 7.4.2, 7.4.3, 7.4.4, 7.4.4 a), 7.4.4 b), 7.5, 7.6, 7.6 a), 7.7, 7.7.1, 7.7.1.1, 7.7.2, 7.7.3, 7.7.4, 7.7.4.1, 7.7.5, 7.7.6, 7.7.6.1, 7.8, 7.9, 7.9.1
+  İş deneyim belgesi: İSTENİYOR
+     dayanak 7.3.8: İsteklilerin ilk ilan tarihinden geriye doğru son beş yıl içerisinde yurt içinde kamu veya özel sektörde gerçekleştirdiği ve idarece noksansız ve ayıpsız kabul edilen ihale konusu alım ile veya benzer işler ile ilgili deneyimini gösteren, istekli tarafından te
+     elenen kural g): Tüzel kişi tarafından iş deneyimini göstermek üzere sunulan belgenin, tüzel kişiliğin yarısından fazla hissesine sahip o
+  Diğer deneyim şartı: 7.3.5 İsteklinin ülke geneli projelerinde aktif olarak en az 2500 personel istihdam ediyor olduğunu belgelemesi gerekmektedir.
+  Madde 7 dışında deneyim geçen: Madde 5 - İhale dokümanının kapsamı | Madde 6 - Bildirim ve tebligat esasları | Madde 35 - Ekonomik açıdan en avantajlı teklifin belirlenmesi | Madde 45 - Sözleşmenin uygulanmasına ilişkin hususlar
+====================================================================================================
+s03_halic_su_sebeke.pdf: 35,918 karakter, 41 bölüm (40 madde), tamamı modele gider
+  İstenen belgeler: Madde 7 - İhaleye katılabilmek için gereken belgeler ve yeterlik kriterleri, Sayfa 3
+  Bentler: 7.1, a), b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), 7.2
+  İş deneyim belgesi: İSTENİYOR
+     dayanak k): İsteklinin kamu veya üniversitelerde teklif ettiği bedelin %70 oranında iş yaptığını gösteren İş Deneyim Belgesi,
+  Madde 7 dışında deneyim geçen: Madde 5 - İhale dokümanının kapsamı | Madde 35 - Ekonomik açıdan en avantajlı teklifin belirlenmesi
+====================================================================================================
+s04_dhmi_elektrik.pdf: 50,595 karakter, 46 bölüm (45 madde), tamamı modele gider
+  İstenen belgeler: Madde 7 - Katılım ve yeterlik kriterleri, Sayfa 2
+  Bentler: 7.1, a), b), c), ç), d), e), f), 7.1.1, 7.1.2, 7.2, 7.2.1, 7.2.2, 7.3, 7.3.1, 7.3.2, 7.3.3, 7.3.4, 7.3.5, 7.3.6, 7.3.7, 7.3.8, 7.3.9, 7.4, 7.5, 7.6, 7.6.1, 7.7, 7.7.1, 7.7.2, 7.7.2.1, 7.7.3, 7.7.4, 7.7.4.1, 7.7.4.2, 7.7.4.3, 7.7.4.4, 7.7.4.5, 7.7.4.6, 7.7.4.7, 7.7.4.7.1, 7.7.5, 7.7.5.1, 7.7.5.1.1, 7.7.5.2, 7.7.5.2.1, 7.7.5.2.2, 7.7.5.2.3, 7.7.5.2.4, 7.7.5.2.5, 7.7.6, 7.7.6.1
+  İş deneyim belgesi: İSTENMİYOR
+     dayanak 7.3: Mesleki ve teknik yeterliğe ilişkin bilgi ve belgeler ile bunların taşıması gereken kriterler: Alt maddeleri (7.3.1–7.3.9): Bu madde boş bırakılmıştır.
+  Madde 7 dışında deneyim geçen: Madde 26 - Geçici teminat | Madde 33 - Ekonomik açıdan en avantajlı teklifin belirlenmesi | Madde 37 - Kesin teminat | Madde 42 - Sözleşmenin uygulanmasına ilişkin hususlar
+====================================================================================================
+s05_halic_sigorta.pdf: 38,967 karakter, 41 bölüm (40 madde), tamamı modele gider
+  İstenen belgeler: Madde 7 - İhaleye katılabilmek için gereken belgeler ve yeterlik kriterleri, Sayfa 3
+  Bentler: 7.1, a), b), c), d), e), f), g), h), i), j), k), l), m), n), o), p), q), r), s), t), 7.2, 7.3
+  İş deneyim belgesi: İSTENİYOR
+     dayanak g): Teklif veren sigorta acente/broker/Sigorta şirketi in sigorta ettirenin karşılaşacağı risk ve hasar sonrası işlemlerini takip edebilecek kurumsal yeterliliğe sahip olduğunu ihale tarihinden önceki 1yıl içinde trafik sigortası hariç asgari 25.000.000,00 TL (yir
+  Madde 7 dışında deneyim geçen: Madde 5 - İhale dokümanının kapsamı | Madde 35 - Ekonomik açıdan en avantajlı teklifin belirlenmesi
+====================================================================================================
+s06_meb_yemek.pdf: 72,078 karakter, 48 bölüm (47 madde), tamamı modele gider
+  İstenen belgeler: Madde 7 - İhaleye katılabilmek için gereken belgeler ve yeterlik kriterleri, Sayfa 4
+  Bentler: 7.1, a), b), c), ç), d), e), f), g), ğ), h), i), 7.2, 7.2.1, 7.3, 7.4, 7.4.1, 7.4.2, 7.4.2 a), 7.4.2 b), 7.4.2 a), 7.4.2 b), 7.4.2 c), 7.4.3, 7.4.3 a), 7.4.3 b), 7.5, 7.5.1, 7.5.1 a), 7.5.1 b), 7.5.2, 7.5.3, 7.5.4, 7.5.5, 7.6, 7.6.1, 7.7, 7.7.1, 7.7.2, 7.8, 7.8.1, 7.9, 7.9.1, 7.9.2, 7.9.3, 7.9.4, 7.9.5, 7.9.5.1, 7.9.5.2, 7.9.5.3, 7.9.5.4, 7.9.5.5, 7.9.5.6, 7.9.5.7, 7.9.5.7.1, 7.9.6, 7.9.6.1, 7.9.6.1.1, 7.9.6.2, 7.9.6.2.1, 7.9.6.2.2, 7.9.6.2.3, 7.9.6.2.4, 7.9.6.2.5, 7.9.7, 7.9.7.1
+  İş deneyim belgesi: İSTENİYOR
+     dayanak 7.5.1: İstekli tarafından teklif edilen bedelin % 25'den az olmamak üzere, ihale konusu iş veya benzer işlere ait tek sözleşmeye ilişkin iş deneyimini gösteren belgelerin veya teknolojik ürün deneyim belgesinin sunulması gerekir.
+     elenen kural ğ): Tüzel kişi tarafından iş deneyimini göstermek üzere kullanılan belgenin, tüzel kişiliğin yarısından fazla hissesine sahi
+     elenen kural i): Kanun kapsamındaki idarelere taahhüt edilenler dışında yurt dışında gerçekleştirilen işlerden elde edilen iş deneyiminin
+     elenen kural 7.2.1: İş ortaklığının her bir ortağı tarafından 7.1. maddesinin (a) ve (ı) bentlerinde yer alan belgelere ilişkin bilgilerin a
+     elenen kural 7.5.1 a): İlk ilan tarihinden geriye doğru son beş yıl içinde kabul işlemleri tamamlanan hizmet alımlarıyla ilgili iş deneyimini g
+     elenen kural 7.5.1 b): Devredilen işlerde devir öncesindeki veya sonrasındaki dönemde ilk sözleşme bedelinin en az % 80'inin gerçekleştirilmesi
+  Madde 7 dışında deneyim geçen: Madde 5 - İhale dokümanının kapsamı | Madde 26 - Geçici teminat | Madde 40 - Kesin teminat | Madde 45 - Sözleşmenin uygulanmasına ilişkin hususlar
+====================================================================================================
+s07_lokman_hekim_guvenlik.pdf: 35,033 karakter, 41 bölüm (40 madde), tamamı modele gider
+  İstenen belgeler: Madde 7 - İhaleye katılabilmek için gereken belgeler ve yeterlik kriterleri, Sayfa 2
+  Bentler: 7.1, a), b), c), d), e), f), g), h), i), j), k), l), m), n), o), 7.2, 7.3, 7.4, 7.5
+  İş deneyim belgesi: İSTENMİYOR
+  Diğer deneyim şartı: j) İstekli Ankara sınırları içerinde Devlet ya da Vakıf üniversitelerinden aktif olarak en az 1 (bir) üniversitede güvenlik hizmeti vermesi,
+  Madde 7 dışında deneyim geçen: Madde 5 - İhale dokümanının kapsamı | Madde 35 - Ekonomik açıdan en avantajlı teklifin belirlenmesi
+====================================================================================================
+s08_kucukyali_spor_yapim.pdf: 72,888 karakter, 47 bölüm (46 madde), tamamı modele gider
+  İstenen belgeler: Madde 7 - İhaleye katılabilmek için gereken belgeler ve yeterlik kriterleri, Sayfa 6
+  Bentler: 7.1, a), b), c), ç), d), e), f), g), h), ı), ı), 7.2, 7.2.1, 7.3, 7.3.1, 7.4, 7.4.1, 7.4.2, 7.4.2 a), 7.4.2 b), 7.4.2 c), 7.4.3, 7.4.3 a), 7.4.3 b), 7.5, 7.5.1, 7.5.1 a), 7.5.1 b), 7.5.1 c), 7.5.1 ç), 7.5.1 d), 7.6, 7.6.1, 7.7, 7.7.1, 7.7.2, 7.7.3, 7.7.4, 7.7.4.1, 7.7.4.2, 7.7.4.3, 7.7.4.4, 7.7.4.5, 7.7.4.6, 7.7.4.7, 7.7.5, 7.7.5.1, 7.7.5.1.1, 7.7.5.2, 7.7.5.2.1, 7.7.5.2.2, 7.7.5.2.3, 7.7.5.2.4, 7.7.5.2.5, 7.7.6, 7.8, 7.9, 7.9.1
+  İş deneyim belgesi: İSTENİYOR
+     dayanak 7.5.1: - İş deneyimini gösteren belgeler: (1) İş deneyimini gösteren belge tutarının; teklif edilen bedelin % 70 ‘den az olmaması gerekmektedir. (2) İstekli, ihale konusu işe ait benzer işlerdeki deneyimini, yurt içinde veya yurt dışında kamu veya özel sektöre bedel 
+     elenen kural h): Tüzel kişi tarafından iş deneyimi göstermek üzere sunulan belgenin, tüzel kişiliğin yarısından fazla hissesine sahip ort
+     elenen kural ı): Tüzel kişi tarafından iş deneyimini göstermek üzere, en az beş yıldır en az % 51 hissesine sahip mimar veya mühendis ort
+     elenen kural 7.2.1: İş ortaklığının her bir ortağı tarafından 7.1. maddesinin (a) ve (b) bentlerinde yer alan belgelerin ayrı ayrı sunulması
+     elenen kural 7.5.1 d): Devredilen işlerde, devir öncesindeki veya sonrasındaki dönemde ilk sözleşme bedelinin en az % 80’inin gerçekleştirilmes
+  Madde 7 dışında deneyim geçen: Madde 5 - İhale dokümanının kapsamı | Madde 35 - Ekonomik açıdan en avantajlı teklifin belirlenmesi
+====================================================================================================
+s09_medeniyet_teknopark.pdf: 141,633 karakter, 78 bölüm (77 madde), tamamı modele gider
+  İstenen belgeler: Madde 7 - İhaleye katılabilmek için gereken belgeler, Sayfa 3
+  Bentler: a), b), c), d), e), f), g), h), i), j), k), l)
+  İş deneyim belgesi: İSTENİYOR
+     dayanak l): Sözleşme Makamı tarafından belirlenecek mesleki ve teknik yeterliğe ilişkin belgeler (İş bitirme belgeleri, hak ediş belgeleri, vb.) Yukarıda sayılan belgelerin hangilerinin eksik evrak niteliğinde olacağı madde 10’daki hükümlere ve ihalenin niteliğine göre ya
+  Madde 7 dışında deneyim geçen: Madde 32 - Tekliflerin değerlendirilmesi | SÖZLEŞME VE ÖZEL KOŞULLAR Madde 9 - Genel yükümlülükler | SÖZLEŞME VE ÖZEL KOŞULLAR Madde 16 - Personel ve ekipman | SÖZLEŞME VE ÖZEL KOŞULLAR Madde 17 - Personelin değiştirilmesi | SÖZLEŞME VE ÖZEL KOŞULLAR Madde 41 - Hüküm bulunmayan haller
+====================================================================================================
+s10_cizre_su_kuyusu.pdf: 72,749 karakter, 49 bölüm (48 madde), tamamı modele gider
+  İstenen belgeler: Madde 7 - İhaleye katılabilmek için gereken belgeler ve yeterlik kriterleri, Sayfa 3
+  Bentler: 7.1, a), b), c), ç), d), e), f), g), ğ), h), ı), i), 7.2, 7.2.1, 7.3, 7.4, 7.4.1, 7.4.2, 7.4.3, 7.5, 7.5.1, 7.5.1 a), 7.5.1 b), 7.5.1 c), 7.5.1 ç), 7.5.1 d), 7.5.2, 7.5.3, 7.5.4, 7.5.5, 7.6, 7.6 a), 7.6 b), 7.6.1, 7.7, 7.7.1, 7.7.2, 7.8, 7.8.1, 7.9, 7.9.1, 7.9.2, 7.9.3, 7.9.4, 7.9.5, 7.9.5.1, 7.9.5.2, 7.9.5.3, 7.9.5.4, 7.9.5.5, 7.9.5.6, 7.9.5.7, 7.9.5.7.1, 7.9.6, 7.9.6.1, 7.9.6.1.1, 7.9.6.2, 7.9.6.2.1, 7.9.6.2.2, 7.9.6.2.3, 7.9.6.2.4, 7.9.6.2.5, 7.9.7, 7.9.7.1
+  İş deneyim belgesi: İSTENİYOR
+     dayanak 7.5.1: İstekli tarafından teklif edilen bedelin % 80'inden az olmamak üzere, ihale konusu iş veya benzer işlere ait tek sözleşmeye ilişkin iş deneyimini gösteren belgelerin sunulması gerekir.
+     elenen kural ğ): Tüzel kişi tarafından iş deneyimini göstermek üzere kullanılan belgenin, tüzel kişiliğin yarısından fazla hissesine sahi
+     elenen kural h): Tüzel kişi tarafından iş deneyimini göstermek üzere, en az beş yıldır % 51 veya daha fazla hissesine sahip mimar veya mü
+     elenen kural i): Kanun kapsamındaki idarelere taahhüt edilenler dışında yurt dışında gerçekleştirilen işlerden elde edilen iş deneyiminin
+     elenen kural 7.2.1: İş ortaklığının her bir ortağı tarafından 7.1. maddesinin (a) bendinde yer alan belgelere ilişkin bilgilerin ayrı ayrı b
+     elenen kural 7.5.1 d): Devredilen işlerde, devir öncesindeki veya sonrasındaki dönemde ilk sözleşme bedelinin en az % 80'inin gerçekleştirilmes
+  Madde 7 dışında deneyim geçen: Madde 5 - İhale dokümanının kapsamı | Madde 26 - Geçici teminat | Madde 35 - Ekonomik açıdan en avantajlı teklifin belirlenmesi | Madde 40 - Kesin teminat | Madde 45 - Sözleşmenin uygulanmasına ilişkin hususlar | Madde 48 - Diğer hususlar

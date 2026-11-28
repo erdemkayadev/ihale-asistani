@@ -7,39 +7,70 @@ from datetime import date                                           # talimata b
 from dotenv import load_dotenv                                      # .env dosyasını okumak için
 from openai import OpenAI                                           # model
 import araclar                                                      # veritabanı araçları
+import veri                                                         # arama_metni: Türkçe küçük harf + noktalama temizliği
 
 load_dotenv()
 client = OpenAI()
 MAKS_TUR = 6                                                        # bir soruda en fazla kaç kez araç çağrılabilir
 
-TALIMAT = """Sen Türkiye kamu ihaleleri konusunda bir asistansın. Kullanıcılar EKAP'tan iş kovalayan firmalar.
+TALIMAT = """Sen Türkiye kamu ihaleleri için bir asistansın. Kullanıcılar EKAP'tan iş kovalayan firmalar; teknik terim bilmezler.
 
-KURALLAR:
-1. Rakam, oran, sayı, firma, idare ya da ihale bilgisi gereken HER soruda araç kullan. Kendi bilginden rakam verme.
-2. Sayıları araç çıktısında yazdığı gibi aktar. Yuvarlama, toplama, ortalama alma gibi hiçbir hesap yapma.
-3. İstatistik cevabında şunları mutlaka yaz: dönem, kaç ihale ve sözleşmeye dayandığı, uygulanan filtreler,
-   araç çıktısındaki uyarılar, doğrulama için 2-3 örnek İKN.
-4. Araç "veri_yok" ya da "hata" döndürürse bunu açıkça söyle; tahmin yürütme. Hiçbir araç soruyu kapsamıyorsa
-   (örn. Türkiye geneli yıllık toplamlar) "bu bilgi veritabanımda yok" de ve hiç sayı yazma; KİK'in yıllık
-   istatistiklerine bakmasını öner.
-5. Konu araması kelime başına göre çalışır ("stor" -> "storage" da eşleşir). Sonuçlardaki "eslesen_kelime"ye bak;
-   alakasız eşleşme varsa "haric" parametresiyle çıkarıp aracı tekrar çağır.
-6. Alan bilgisi: perde, stor, tül, jaluzi ÜRÜNÜ soruluyorsa tür "Mal"dır (yapım işlerinde "perde" betonarme duvar demektir).
-   Yemek, temizlik, güvenlik, taşıma işleri "Hizmet"tir. Bina, yol, altyapı işleri "Yapım"dır.
-7. Kullanıcının yüklediği şartname/ihale dokümanıyla ilgili sorularda "sartname_sor" aracını kullan. Belge yüklenmemişse
-   kullanıcıdan yüklemesini iste.
-8. Hukuki tavsiye verme. Cevapların karar desteğidir; önemli kararlardan önce EKAP'tan ve ihale dokümanından doğrulanmalıdır.
-9. Tutarları kısaltmadan, araçtaki gibi yaz ("1,2 milyon" değil "1.200.000 TL").
-10. Sorudaki iş konusunu (temizlik, perde, yemek, asfalt...) MUTLAKA "konu" parametresine yaz. Kullanıcının söylemediği
-    filtreyi (usul, il, tarih) ekleme.
-11. Soru yeterince netse kullanıcıya onay sorma; aracı çağır. Sonuç beklenmedikse parametreyi düzeltip aracı kendin
-    tekrar çağır.
-12. "sonuc_listesi" ve "acik_ihaleler" sonuçları kullanıcıya program tarafından ayrıca TABLO olarak gösterilir.
-    Tabloyu ya da satırları tekrar yazma. Sadece 2-4 cümle özet yaz: toplam eşleşen sayısı, filtreler, uyarılar,
-    dikkat çeken 1-2 kayıt (İKN ile).
-13. Önceki mesajlardaki rakamları tekrar kullanacaksan aracı yeniden çağır.
-14. Kısa, net, Türkçe yaz.
-Bugünün tarihi: {bugun}."""
+NE YAPABİLİRSİN (sadece bunlar):
+- Sonuçlanmış ihalelerde kazanan teklifin yaklaşık maliyete oranı, teklif sayısı, tek teklif oranı (sonuc_istatistigi)
+- Kim kazandı, ne kadara, kaç teklifle (sonuc_listesi); en çok ihale kazanan firmalar (firma_siralamasi)
+- Teklif tarihi geçmemiş ihale ilanları (acik_ihaleler); verinin hangi dönemi kapsadığı (kapsam)
+- Kullanıcının yüklediği şartnamenin içeriği (sartname_sor)
+Bunların dışındaki bir şeyi (İKN ile doküman getirme, EKAP'a giriş, teklif hazırlama, kazanma tahmini) yapamazsın;
+"yapabilirim" diye vaat etme, kullanıcıyı da yapamayacağın bir seçime yönlendirme.
+
+DOĞRULUK:
+1. Rakam, firma, idare ya da ihale bilgisi gereken HER soruda araç kullan. Kendi bilginden rakam verme.
+2. Sayıları araçtaki gibi, rakamla aktar; yanına yazıyla karşılık ekleme ("90 (doksan)" yazma). Yuvarlama, toplama,
+   ortalama gibi hiçbir hesap yapma. Tutarları kısaltma ("1.200.000 TL"). Olmayan bir şeye sayı uydurma ("%0", "sıfır"):
+   "istenmiyor", "yok" de.
+3. Araç veri bulamazsa ya da hata verirse bunu açıkça söyle, tahmin yürütme. Hiçbir araç kapsamıyorsa
+   "bu bilgi elimdeki veride yok" de, sayı yazma.
+4. Önceki mesajlardaki rakamları tekrar kullanacaksan aracı yeniden çağır.
+
+PARAMETRELER:
+5. Soruda iş konusu geçiyorsa (örn. temizlik, perde) onu "konu"ya yaz; geçmiyorsa boş bırak. Soruda geçmeyen filtreyi
+   (konu, usul, il, idare) ekleme; program bunları zaten siler.
+6. Alan bilgisi: perde/stor/tül/jaluzi ürünü -> "Mal" (yapımda "perde" betonarme duvardır). Yemek, temizlik, güvenlik,
+   taşıma -> "Hizmet". Bina, yol, altyapı -> "Yapım". "Güvenlik hizmeti" sorulursa konu "özel güvenlik" olsun
+   (sadece "güvenlik" iş güvenliği, bilgi güvenliği gibi alakasız işleri de getirir).
+7. Konu araması kelime başına göre çalışır ("stor" -> "storage"). Sonuçlardaki "eslesen_kelime"ye bak; alakasız eşleşme
+   varsa "haric" ile çıkarıp aracı tekrar çağır.
+8. Tarihler: bugün {bugun}. "Bu ay" = {bu_ay}, "geçen ay" = {gecen_ay}, "bu yıl" = {bu_yil}, "geçen yıl" = {gecen_yil}.
+   Kullanıcı dönem söylemediyse tarih verme (araç tüm veriyi kullanır). Soru netse onay sorma, aracı çağır.
+{belge}
+CEVAP BİÇİMİ (kullanıcı bunu okuyacak):
+9. İlk cümle doğrudan cevap olsun (örn. "Ankara'da temizlik ihaleleri yaklaşık maliyetin ortanca %93,7'sine gidiyor.").
+10. Ardından kısa bir "Dayanak" satırı: dönem (ay adlarıyla, örn. Haziran–Kasım 2026), kaç ihaleye dayandığı.
+11. Sadece kullanıcıyı ilgilendiren uyarıları yaz, sade dille: az veri, il eşleşmesi eksikliği, firma adı birleştirme.
+    Eksik okunan ay listelerini, "veri_yok", "araç", "araç çıktısı", parametre adları gibi teknik kelimeleri ASLA yazma.
+12. İstatistikte doğrulama için 2-3 örnek İKN ver. Veri yoksa İKN başlığı açma.
+13. Liste araçlarının (sonuc_listesi, acik_ihaleler, firma_siralamasi) sonucu kullanıcıya program tarafından ayrıca TABLO
+    olarak gösterilir. Satırları tekrar yazma; 2-3 cümle özet yaz. "eslesen_ihale" ihale sayısı, "eslesen_sozlesme"
+    sözleşme sayısıdır; karıştırma.
+14. Hukuki tavsiye verme. Önemli kararlardan önce EKAP'tan ve ihale dokümanından doğrulanmasını hatırlat (tek cümle).
+15. Kısa yaz. Kalın yazıyı en fazla 2-3 yerde kullan. Sonunda en fazla bir öneri sorusu sor."""
+
+BELGE_VAR = """ŞARTNAME: Kullanıcı "{ad}" adlı belgeyi yükledi. "Bu ihalede", "şartnamede", "belgede", "iş deneyimi",
+"teminat", "süre", "yeterlik", "ceza", "ödeme" gibi sorular bu belgeyle ilgilidir: sartname_sor aracını kullan, İKN isteme.
+Belgeden doğrulanmış ihale kartı (sorudan önce bilinenler):
+{kart}
+Şartname cevabı kuralları:
+- sartname_sor'un "cevap" alanındaki hükmü değiştirme, ona aykırı ya da ek sonuç çıkarma.
+- sartname_sor'un "kaynaklar"ındaki alıntılar ve "istenen_belgeler" listesi kullanıcıya program tarafından ayrıca
+  gösterilir; tekrar yazma, "listeleyeyim mi" diye sorma. Listenin varlığını ve öne çıkan 2-3 şartı söylemen yeterli.
+  Kısa cevabı yaz ve dayandığı madde etiketini söyle (örn. "Madde 7'ye göre iş deneyim belgesi istenmiyor.").
+- "bulundu" false ise: "Belgede bu konuda bir hüküm bulamadım" de ve "okunan" bilgisini aktar ("belgenin tamamı okundu").
+  Kendi bilginden ihale mevzuatı yorumu ekleme.
+- Kullanıcı "çıkar", "devam", "detay ver" gibi kısa bir takip yazarsa önceki konuyu genişleterek sartname_sor'a
+  AÇIK bir soru gönder (örn. "İş deneyimi ve benzer iş tanımıyla ilgili tüm hükümler neler?").
+"""
+BELGE_YOK = """ŞARTNAME: Kullanıcı belge yüklemedi. Belge içeriği sorarsa sol menüden PDF ya da Word yüklemesini söyle.
+"""
 
 _ORTAK = {                                                           # birçok araçta aynı olan parametreler
     "tur": {"type": "string", "enum": ["Mal", "Hizmet", "Yapım", "Danışmanlık"], "description": "İhale türü"},
@@ -66,11 +97,16 @@ ARAC_TANIMLARI = [
                     "Firma ya da idare geçmişi, örnek ihaleler için.",
      "parameters": {"type": "object", "properties": {**_ORTAK, **_TARIH,
                     "yuklenici": {"type": "string", "description": "Kazanan firma adında geçecek ifade"}}}},
+    {"type": "function", "name": "firma_siralamasi",
+     "description": "En çok ihale kazanan ilk 10 firma: kazandığı ihale ve sözleşme sayısı, toplam TL bedel, örnek İKN. "
+                    "'En çok kim kazanıyor, rakipler kim, pazarın büyük oyuncuları' soruları için.",
+     "parameters": {"type": "object", "properties": {**_ORTAK, **_TARIH}}},
     {"type": "function", "name": "acik_ihaleler",
      "description": "Teklif tarihi henüz geçmemiş ihale ilanları, en yakın tarihten başlayarak. En fazla 20 satır.",
      "parameters": {"type": "object", "properties": _ORTAK}},
     {"type": "function", "name": "sartname_sor",
-     "description": "Kullanıcının yüklediği ihale dokümanında (idari/teknik şartname) arama yapar, madde kaynaklı cevap döndürür.",
+     "description": "SADECE kullanıcının yüklediği ihale dokümanının (idari/teknik şartname) içinde arama yapar. "
+                    "Geçmiş ihale sonuçları ya da kazananlar için KULLANMA.",
      "parameters": {"type": "object", "properties": {"soru": {"type": "string", "description": "Belgeye sorulacak soru"}},
                     "required": ["soru"]}},
 ]
@@ -78,31 +114,37 @@ for _t in ARAC_TANIMLARI:                                            # parametre
     _t["strict"] = False
 
 
-def _araci_calistir(ad, parametreler, sartname_db):
+def _araci_calistir(ad, parametreler, belge):
     """Modelin istediği aracı çalıştırır. Döner: JSON'a çevrilebilir sonuç."""
     try:
         if ad == "kapsam":
             return {k: v for k, v in araclar.kapsam().items() if k in ("ozet", "son_bulten")}
         if ad == "sartname_sor":
-            if sartname_db is None:
+            if belge is None:
                 return {"hata": "Kullanıcı henüz bir ihale dokümanı yüklemedi."}
-            from rag import cevapla                                 # şartname aracı sadece gerekince yüklensin
-            return {"cevap": cevapla(sartname_db, parametreler.get("soru", ""))}
-        if ad in ("sonuc_istatistigi", "sonuc_listesi", "acik_ihaleler"):
+            import rag                                              # şartname aracı sadece gerekince yüklensin
+            return rag.sartname_cevapla(belge, parametreler.get("soru", ""))
+        if ad in ("sonuc_istatistigi", "sonuc_listesi", "acik_ihaleler", "firma_siralamasi"):
             return getattr(araclar, ad)(**parametreler)
         return {"hata": f"Bilinmeyen araç: {ad}"}
     except TypeError as hata:                                       # model tanımsız bir parametre gönderdiyse
         return {"hata": f"Geçersiz parametre: {hata}"}
+    except Exception as hata:                                       # şartname tarafında API hatası vb.: sohbet çökmesin
+        return {"hata": f"İşlem yapılamadı: {type(hata).__name__}"}
 
 
 # ---------- listeler: tabloyu model değil program basar ----------
 
 LISTE_ARACLARI = {                                                  # araç adı -> (sonuçtaki liste anahtarı, sütunlar)
-    "sonuc_listesi": ("sonuclar", [("ikn", "İKN"), ("sonuc_ilani", "Sonuç ilanı"), ("idare", "İdare"), ("konu", "Konu"),
-                                   ("usul", "Usul"), ("yuklenici", "Kazanan"), ("sozlesme_bedeli", "Bedel"),
-                                   ("teklif_sayisi", "Teklif"), ("oran_yuzde", "Oran %")]),
-    "acik_ihaleler": ("ilanlar", [("ikn", "İKN"), ("ihale_tarihi", "Teklif tarihi"), ("il", "İl"), ("idare", "İdare"),
-                                  ("konu", "Konu"), ("usul", "Usul"), ("uyari", "Uyarı")]),
+    "sonuc_listesi": ("sonuclar", [("ikn", "İKN"), ("yuklenici", "Kazanan"), ("sozlesme_bedeli", "Bedel"),
+                                   ("oran_yuzde", "Oran %"), ("teklif_sayisi", "Teklif"), ("sonuc_ilani", "Sonuç ilanı"),
+                                   ("konu", "Konu"), ("idare", "İdare"), ("usul", "Usul")]),
+    "acik_ihaleler": ("ilanlar", [("ikn", "İKN"), ("ihale_tarihi", "Teklif tarihi"), ("konu", "Konu"), ("il", "İl"),
+                                  ("idare", "İdare"), ("usul", "Usul"), ("uyari", "Uyarı")]),
+    "firma_siralamasi": ("firmalar", [("sira", "Sıra"), ("yuklenici", "Firma"), ("ihale_sayisi", "İhale"),
+                                      ("sozlesme_sayisi", "Sözleşme"), ("toplam_bedel_try", "Toplam bedel"),
+                                      ("ornek_ikn", "Örnek İKN")]),
+    "sartname_sor": ("istenen_belgeler", [("bent", "Bent"), ("kisa", "İstenen belge / şart")]),   # "hangi belgeler" sorusu
 }
 
 
@@ -110,9 +152,9 @@ def _bicim(anahtar, deger, satir):
     """Hücre metni: bedel Türkçe binlik ayraçla ve para birimiyle, boşlar '-'."""
     if deger is None or deger == "":
         return "-"
-    if anahtar == "sozlesme_bedeli":
+    if anahtar in ("sozlesme_bedeli", "toplam_bedel_try"):
         metin = f"{deger:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")   # 1234567.5 -> 1.234.567,50
-        return f"{metin} {satir.get('para_birimi') or ''}".strip()
+        return f"{metin} {satir.get('para_birimi') or 'TRY'}"
     if anahtar == "oran_yuzde":
         return str(deger).replace(".", ",")
     return str(deger)
@@ -124,6 +166,32 @@ def tablo_yap(ad, sonuc):
         return None
     anahtar, sutunlar = LISTE_ARACLARI[ad]
     return [{baslik: _bicim(k, satir.get(k), satir) for k, baslik in sutunlar} for satir in sonuc.get(anahtar, [])]
+
+
+# ---------- uydurma filtre koruması ----------
+
+DENETLENEN = ("konu", "usul", "il", "idare", "yuklenici")           # soruda geçmesi gereken parametreler
+
+
+def _soruda_mi(ifade, metin):
+    """İfadedeki kelimelerden birinin kökü (ilk 5 harf) soruda/geçmişte geçiyor mu? 'stor perde' -> 'perdeler' de sayılır."""
+    return any((" " + k[:5]) in metin for k in veri.arama_metni(ifade).split())
+
+
+def filtreleri_temizle(parametreler, metin):
+    """Kullanıcının söylemediği konu/usul/il/idare/firma filtrelerini siler. Döner: (temiz parametreler, silinenler)."""
+    temiz, silinen = dict(parametreler), []
+    for ad in DENETLENEN:
+        if ad not in temiz:
+            continue
+        parcalar = [x.strip() for x in str(temiz[ad]).split(",") if x.strip()]
+        kalan = [x for x in parcalar if _soruda_mi(x, metin)]
+        silinen += [f"{ad}={x}" for x in parcalar if x not in kalan]
+        if kalan:
+            temiz[ad] = ", ".join(kalan)
+        else:
+            del temiz[ad]
+    return temiz, silinen
 
 
 # ---------- rakam kontrolü ----------
@@ -158,17 +226,27 @@ def dogrulanmayan_sayilar(cevap, kaynaklar):
 
 # ---------- ana fonksiyon ----------
 
-def sor(soru, gecmis=None, sartname_db=None, model=None):
-    """Soruyu cevaplar. gecmis: [{"role": "user"/"assistant", "content": "..."}].
-    Döner: {"cevap": metin, "araclar": [(ad, parametreler)], "tablolar": {araç adı: satırlar}, "dogrulanmayan": [sayılar]}."""
+def sor(soru, gecmis=None, belge=None, model=None):
+    """Soruyu cevaplar. gecmis: [{"role": "user"/"assistant", "content": "..."}]. belge: rag.belge_hazirla() sonucu.
+    Döner: {"cevap", "araclar": [(ad, parametreler)], "tablolar": {araç: satırlar},
+            "kaynaklar": [{"etiket", "alinti"}] (şartname alıntıları), "dogrulanmayan": [sayılar]}."""
     girdi = list(gecmis or []) + [{"role": "user", "content": soru}]
     bugun = date.today()
-    talimat = TALIMAT.format(bugun=bugun.isoformat())
+    gecen = date(bugun.year - (bugun.month == 1), (bugun.month - 2) % 12 + 1, 1)      # önceki takvim ayı
+    if belge is not None:
+        import rag
+        belge_notu = BELGE_VAR.format(ad=belge["ad"], kart=rag.kart_metni(belge.get("kart")) or "(kart çıkarılamadı)")
+    else:
+        belge_notu = BELGE_YOK
+    talimat = TALIMAT.format(bugun=bugun.isoformat(), bu_ay=bugun.strftime("%Y-%m"), gecen_ay=gecen.strftime("%Y-%m"),
+                             bu_yil=bugun.year, gecen_yil=bugun.year - 1, belge=belge_notu)
     yillar = "yıllar: " + " ".join(str(y) for y in range(2015, bugun.year + 2))   # "geçen yıl" -> 2025 yazabilsin
-    kaynaklar, kullanilan, tablolar = [soru, talimat, yillar], [], {}             # rakam kontrolünün izin verdiği metinler
+    kaynaklar, kullanilan, tablolar, alintilar = [soru, talimat, yillar], [], {}, []   # rakam kontrolünün izin verdiği metinler
+    araclar_ = [t for t in ARAC_TANIMLARI if belge is not None or t["name"] != "sartname_sor"]   # belge yoksa şartname aracı yok
+    kullanici_metni = veri.arama_metni(" ".join([soru] + [m["content"] for m in (gecmis or []) if m["role"] == "user"]))
     for _ in range(MAKS_TUR):
         yanit = client.responses.create(model=model or os.getenv("MODEL"), instructions=talimat,
-                                        input=girdi, tools=ARAC_TANIMLARI)
+                                        input=girdi, tools=araclar_)
         cagrilar = [o for o in yanit.output if o.type == "function_call"]
         if not cagrilar:                                            # araç istemedi: cevap hazır
             break
@@ -176,17 +254,24 @@ def sor(soru, gecmis=None, sartname_db=None, model=None):
         for c in cagrilar:
             parametreler = json.loads(c.arguments or "{}")
             parametreler = {k: v for k, v in parametreler.items() if v not in (None, "")}   # boş parametreleri at
-            ham = _araci_calistir(c.name, parametreler, sartname_db)
+            silinen = []
+            if c.name != "sartname_sor":
+                parametreler, silinen = filtreleri_temizle(parametreler, kullanici_metni)   # uydurma filtreleri at
+            ham = _araci_calistir(c.name, parametreler, belge)
+            if silinen and isinstance(ham, dict):                   # modele neyin neden uygulanmadığını söyle
+                ham["uygulanmayan_filtreler"] = "Soruda geçmediği için uygulanmadı: " + ", ".join(silinen)
             sonuc = json.dumps(ham, ensure_ascii=False, default=str)
             kullanilan.append((c.name, parametreler))
             kaynaklar += [sonuc, json.dumps(parametreler, ensure_ascii=False)]   # modelin gönderdiği tarihler de geçerli
+            if c.name == "sartname_sor" and isinstance(ham, dict):
+                alintilar = ham.get("kaynaklar", [])                # son şartname cevabının doğrulanmış alıntıları
             tablo = tablo_yap(c.name, ham)
-            if tablo is not None:
+            if tablo:                                               # boş tablo gösterilmez
                 tablolar[c.name] = tablo                            # aynı araç tekrar çağrılırsa son (düzeltilmiş) sonuç kalır
             girdi.append({"type": "function_call_output", "call_id": c.call_id, "output": sonuc})
     else:                                                           # MAKS_TUR doldu, hâlâ araç istiyor
         return {"cevap": "Bu soruyu güvenilir şekilde cevaplayamadım. Soruyu daraltarak tekrar dener misiniz?",
-                "araclar": kullanilan, "tablolar": {}, "dogrulanmayan": []}
+                "araclar": kullanilan, "tablolar": {}, "kaynaklar": [], "dogrulanmayan": []}
 
     cevap = yanit.output_text
     supheli = dogrulanmayan_sayilar(cevap, kaynaklar)
@@ -197,24 +282,42 @@ def sor(soru, gecmis=None, sartname_db=None, model=None):
                       "Cevabı baştan, sadece araç çıktılarındaki sayılarla yaz. Araç çıktısında karşılığı yoksa o sayıyı "
                       "hiç yazma. Bu kontrolden, önceki taslaktan ya da düzeltmeden kullanıcıya hiç bahsetme."})
         yanit = client.responses.create(model=model or os.getenv("MODEL"), instructions=talimat, input=girdi,
-                                        tools=ARAC_TANIMLARI, tool_choice="none")   # yeni araç çağrısı yaptırma
+                                        tools=araclar_, tool_choice="none")   # yeni araç çağrısı yaptırma
         cevap = yanit.output_text
         supheli = dogrulanmayan_sayilar(cevap, kaynaklar)
     if supheli:                                                     # hâlâ varsa kullanıcıya açıkça söyle
         cevap += f"\n\n> ⚠️ Şu sayılar veriden doğrulanamadı, dikkate almayın: {', '.join(supheli)}"
-    return {"cevap": cevap, "araclar": kullanilan, "tablolar": tablolar, "dogrulanmayan": supheli}
+    return {"cevap": cevap, "araclar": kullanilan, "tablolar": tablolar, "kaynaklar": alintilar, "dogrulanmayan": supheli}
+
+
+def gecmis_notu(sonuc):
+    """Sohbet geçmişine eklenecek kısa not: model bir sonraki soruda neyin gösterildiğini bilsin ("çıkar" gibi takipler)."""
+    not_ = "".join(f"\n[{ad} tablosu gösterildi: {len(t)} satır]" for ad, t in sonuc.get("tablolar", {}).items())
+    if sonuc.get("kaynaklar"):
+        not_ += "\n[Şartname kaynakları gösterildi: " + "; ".join(k["etiket"] for k in sonuc["kaynaklar"]) + "]"
+    return not_
 
 
 # ---------- terminalden deneme ----------
 
 if __name__ == "__main__":
+    import sys
+    belge = None
+    if len(sys.argv) > 1:                                           # python ajan.py sartname.pdf -> belgeyle dene
+        import rag
+        print("Belge okunuyor, ihale kartı çıkarılıyor...")
+        belge = rag.belge_hazirla(sys.argv[1], os.path.basename(sys.argv[1]))
+        if belge is None:
+            sys.exit("Belgede okunabilir metin yok (taranmış PDF olabilir).")
+        for k in rag.ihale_karti(belge).values():
+            print(f"  {k['ad']}: {k['deger'] or '— belgede bulunamadı'}" + (f"  [{k['etiket']}]" if k["etiket"] else ""))
     gecmis = []
     print("İhale asistanı. Çıkmak için boş satır.")
     while True:
         soru = input("\nSoru: ").strip()
         if not soru:
             break
-        sonuc = sor(soru, gecmis)
+        sonuc = sor(soru, gecmis, belge)
         for ad, p in sonuc["araclar"]:
             print(f"  [araç] {ad} {json.dumps(p, ensure_ascii=False)}")
         print("\n" + sonuc["cevap"])
@@ -222,5 +325,6 @@ if __name__ == "__main__":
             print(f"\n--- {ad}: {len(satirlar)} satır ---")
             for satir in satirlar:
                 print(" | ".join(str(v)[:45] for v in satir.values()))
-        not_ = "".join(f"\n[{ad} tablosu gösterildi: {len(t)} satır]" for ad, t in sonuc["tablolar"].items())
-        gecmis += [{"role": "user", "content": soru}, {"role": "assistant", "content": sonuc["cevap"] + not_}]
+        for k in sonuc["kaynaklar"]:                                # şartname alıntıları: belgeden birebir
+            print(f"\n  📄 {k['etiket']}\n     «{k['alinti']}»")
+        gecmis += [{"role": "user", "content": soru}, {"role": "assistant", "content": sonuc["cevap"] + gecmis_notu(sonuc)}]
